@@ -1,0 +1,91 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { getToken } from '@/utils/auth'
+
+const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/Login.vue')
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/Register.vue')
+  },
+  {
+    path: '/',
+    name: 'Layout',
+    component: () => import('@/views/Layout.vue'),
+    redirect: '/dashboard',
+    children: [
+      {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue')
+      },
+      {
+        path: '/system/user',
+        name: 'User',
+        component: () => import('@/views/system/User.vue')
+      },
+      {
+        path: '/system/role',
+        name: 'Role',
+        component: () => import('@/views/system/Role.vue')
+      },
+      {
+        path: '/system/menu',
+        name: 'Menu',
+        component: () => import('@/views/system/Menu.vue')
+      },
+      {
+        path: '/system/dict',
+        name: 'Dict',
+        component: () => import('@/views/system/Dict.vue')
+      },
+      {
+        path: '/system/config',
+        name: 'Config',
+        component: () => import('@/views/system/Config.vue')
+      },
+      {
+        path: '/system/notice',
+        name: 'Notice',
+        component: () => import('@/views/system/Notice.vue')
+      },
+      {
+        path: '/system/operlog',
+        name: 'OperLog',
+        component: () => import('@/views/system/OperLog.vue')
+      },
+      {
+        path: '/system/loginlog',
+        name: 'LoginLog',
+        component: () => import('@/views/system/LoginLog.vue')
+      },
+      {
+        path: '/system/online',
+        name: 'Online',
+        component: () => import('@/views/system/Online.vue')
+      }
+    ]
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+router.beforeEach((to, from, next) => {
+  const token = getToken()
+  if (to.path === '/login' || to.path === '/register') {
+    next()
+  } else if (!token) {
+    next('/login')
+  } else {
+    next()
+  }
+})
+
+export default router
