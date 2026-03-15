@@ -198,18 +198,38 @@
     </el-row>
 
     <!-- 公告详情对话框 -->
-    <el-dialog v-model="noticeVisible" :title="viewNoticeData.noticeTitle" width="700px">
-      <el-descriptions :column="1" border>
-        <el-descriptions-item label="公告类型">
-          <el-tag v-if="viewNoticeData.noticeType === '1'" type="primary">通知</el-tag>
-          <el-tag v-else-if="viewNoticeData.noticeType === '2'" type="success">公告</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="公告内容">
-          <div v-html="viewNoticeData.noticeContent"></div>
-        </el-descriptions-item>
-        <el-descriptions-item label="创建者">{{ viewNoticeData.createBy }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ viewNoticeData.createTime }}</el-descriptions-item>
-      </el-descriptions>
+    <el-dialog v-model="noticeVisible" width="800px" class="notice-detail-dialog">
+      <template #header>
+        <div class="notice-detail-header">
+          <div class="notice-detail-type" :class="`type-${viewNoticeData.noticeType}`">
+            <el-icon v-if="viewNoticeData.noticeType === '1'" :size="24"><ChatDotRound /></el-icon>
+            <el-icon v-else-if="viewNoticeData.noticeType === '2'" :size="24"><Document /></el-icon>
+            <span class="notice-type-text">{{ viewNoticeData.noticeType === '1' ? '通知' : '公告' }}</span>
+          </div>
+          <div class="notice-detail-title">{{ viewNoticeData.noticeTitle }}</div>
+        </div>
+      </template>
+      <div class="notice-detail-body">
+        <div class="notice-detail-meta">
+          <div class="meta-item">
+            <el-icon class="meta-icon"><User /></el-icon>
+            <span class="meta-label">创建者：</span>
+            <span class="meta-value">{{ viewNoticeData.createBy }}</span>
+          </div>
+          <div class="meta-item">
+            <el-icon class="meta-icon"><Clock /></el-icon>
+            <span class="meta-label">创建时间：</span>
+            <span class="meta-value">{{ viewNoticeData.createTime }}</span>
+          </div>
+        </div>
+        <div class="notice-divider"></div>
+        <div class="notice-detail-content">
+          <div class="content-wrapper" v-html="viewNoticeData.noticeContent"></div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="noticeVisible = false">关闭</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -826,6 +846,25 @@ ul {
 .notice-list {
   max-height: 480px;
   overflow-y: auto;
+  padding-right: 8px;
+}
+
+.notice-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notice-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.notice-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.notice-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .notice-item {
@@ -1034,5 +1073,203 @@ ul {
 
 .tool-card:hover .tool-arrow {
   transform: translateX(6px);
+}
+
+/* 公告详情对话框样式 */
+.notice-detail-dialog :deep(.el-dialog__header) {
+  padding: 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.notice-detail-dialog :deep(.el-dialog__body) {
+  padding: 0;
+}
+
+.notice-detail-dialog :deep(.el-dialog__footer) {
+  padding: 16px 24px;
+  border-top: 1px solid #ebeef5;
+}
+
+.notice-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.notice-detail-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.type-1 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.type-2 {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.notice-type-text {
+  font-size: 14px;
+}
+
+.notice-detail-title {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notice-detail-body {
+  padding: 24px;
+}
+
+.notice-detail-meta {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #606266;
+}
+
+.meta-icon {
+  font-size: 16px;
+  color: #909399;
+}
+
+.meta-label {
+  color: #909399;
+}
+
+.meta-value {
+  font-weight: 500;
+  color: #303133;
+}
+
+.notice-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #dcdfe6, transparent);
+  margin-bottom: 20px;
+}
+
+.notice-detail-content {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 200px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.notice-detail-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notice-detail-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.notice-detail-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.notice-detail-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.content-wrapper {
+  line-height: 1.8;
+  color: #303133;
+}
+
+.content-wrapper :deep(p) {
+  margin-bottom: 12px;
+}
+
+.content-wrapper :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 12px 0;
+}
+
+.content-wrapper :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+
+.content-wrapper :deep(table td),
+.content-wrapper :deep(table th) {
+  border: 1px solid #dcdfe6;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.content-wrapper :deep(table th) {
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
+
+.content-wrapper :deep(ul),
+.content-wrapper :deep(ol) {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.content-wrapper :deep(li) {
+  margin-bottom: 6px;
+}
+
+.content-wrapper :deep(blockquote) {
+  border-left: 4px solid #409eff;
+  padding-left: 16px;
+  margin: 12px 0;
+  color: #606266;
+  background: #f5f7fa;
+  padding: 12px 16px;
+}
+
+.content-wrapper :deep(code) {
+  background: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #e6a23c;
+}
+
+.content-wrapper :deep(pre) {
+  background: #282c34;
+  color: #abb2bf;
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.content-wrapper :deep(pre code) {
+  background: none;
+  color: inherit;
+  padding: 0;
 }
 </style>
