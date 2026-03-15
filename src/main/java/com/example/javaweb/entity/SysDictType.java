@@ -21,12 +21,14 @@ public class SysDictType implements Serializable {
 
     private String status;
 
+    @TableField(fill = FieldFill.INSERT)
     private String createBy;
 
     @TableField(fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)

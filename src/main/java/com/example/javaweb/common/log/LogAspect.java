@@ -76,8 +76,8 @@ public class LogAspect {
             operLog.setOperUrl(request != null ? request.getRequestURI() : "");
             operLog.setOperIp(request != null ? request.getRemoteAddr() : "");
             operLog.setOperLocation("未知");
-            operLog.setOperParam(JSON.toJSONString(joinPoint.getArgs()));
-            operLog.setJsonResult(result != null ? JSON.toJSONString(result) : "");
+            operLog.setOperParam(truncateString(JSON.toJSONString(joinPoint.getArgs()), 2000));
+            operLog.setJsonResult(result != null ? truncateString(JSON.toJSONString(result), 2000) : "");
             operLog.setStatus(exception != null ? 1 : 0);
             operLog.setErrorMsg(exception != null ? exception.getMessage() : "");
             operLog.setCostTime(time);
@@ -124,6 +124,19 @@ public class LogAspect {
             return 9;
         }
         return 0;
+    }
+
+    /**
+     * 截取字符串到指定长度
+     */
+    private String truncateString(String str, int maxLength) {
+        if (str == null) {
+            return "";
+        }
+        if (str.length() <= maxLength) {
+            return str;
+        }
+        return str.substring(0, maxLength);
     }
 
 }

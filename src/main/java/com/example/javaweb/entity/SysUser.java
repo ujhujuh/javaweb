@@ -40,12 +40,14 @@ public class SysUser implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginDate;
 
+    @TableField(fill = FieldFill.INSERT)
     private String createBy;
 
     @TableField(fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)

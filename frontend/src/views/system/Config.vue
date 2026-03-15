@@ -18,7 +18,7 @@
           <el-input v-model="queryForm.configKey" placeholder="请输入参数键名" clearable />
         </el-form-item>
         <el-form-item label="系统内置">
-          <el-select v-model="queryForm.configType" placeholder="请选择" clearable>
+          <el-select v-model="queryForm.configType" placeholder="请选择" clearable style="width: 150px">
             <el-option label="是" value="Y" />
             <el-option label="否" value="N" />
           </el-select>
