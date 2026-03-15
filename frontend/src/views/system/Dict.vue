@@ -38,11 +38,20 @@
         </el-table-column>
         <el-table-column prop="remark" label="备注" />
         <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" width="220" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleEditType(row)">编辑</el-button>
-            <el-button size="small" @click="handleViewData(row)">字典配置</el-button>
-            <el-button size="small" type="danger" @click="handleDeleteType(row)">删除</el-button>
+            <el-dropdown @command="(command) => handleCommandAction(command, row)">
+              <el-button size="small" type="primary" style="margin-left: 8px;">
+                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="viewData">字典配置</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -184,6 +193,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { ArrowDown } from '@element-plus/icons-vue'
 import { dictApi } from '@/api/system'
 
 const queryForm = reactive({
@@ -403,6 +413,17 @@ const handleDeleteData = (row) => {
       ElMessage.error('删除失败')
     }
   }).catch(() => {})
+}
+
+const handleCommandAction = (command, row) => {
+  switch (command) {
+    case 'viewData':
+      handleViewData(row)
+      break
+    case 'delete':
+      handleDeleteType(row)
+      break
+  }
 }
 
 onMounted(() => {

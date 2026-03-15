@@ -1,16 +1,19 @@
 <template>
   <el-container class="layout-container">
-    <el-aside width="200px">
+    <!-- 纵向菜单模式 -->
+    <el-aside v-if="!isHorizontal" :width="isCollapsed ? '64px' : '200px'" class="aside-transition">
       <el-menu
         :default-active="activeMenu"
         router
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#ffd04b"
+        :collapse="isCollapsed"
+        :collapse-transition="false"
       >
         <el-menu-item index="/dashboard">
           <el-icon><House /></el-icon>
-          <span>首页</span>
+          <template #title>首页</template>
         </el-menu-item>
         <template v-for="menu in menuList" :key="menu.id">
           <!-- 有子菜单 -->
@@ -24,19 +27,64 @@
           <!-- 没有子菜单 -->
           <el-menu-item v-else :index="formatPath(menu.path)" @click="handleMenuClick(menu)">
             <el-icon v-if="menu.icon"><component :is="getIconComponent(menu.icon)" /></el-icon>
-            <span>{{ menu.menuName }}</span>
+            <template #title>{{ menu.menuName }}</template>
           </el-menu-item>
         </template>
       </el-menu>
+      <!-- 菜单折叠控制区 -->
+      <div class="menu-collapse-control" @click="toggleCollapse">
+        <el-icon class="collapse-icon">
+          <component :is="isCollapsed ? Expand : Fold" />
+        </el-icon>
+      </div>
     </el-aside>
+
+    <!-- 横向菜单模式 -->
+    <el-header v-if="isHorizontal" class="horizontal-header">
+      <div class="horizontal-menu">
+        <el-menu
+          :default-active="activeMenu"
+          router
+          mode="horizontal"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-menu-item index="/dashboard">
+            <el-icon><House /></el-icon>
+            <span>首页</span>
+          </el-menu-item>
+          <template v-for="menu in menuList" :key="menu.id">
+            <!-- 有子菜单 -->
+            <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path || String(menu.id)">
+              <template #title>
+                <el-icon v-if="menu.icon"><component :is="getIconComponent(menu.icon)" /></el-icon>
+                <span>{{ menu.menuName }}</span>
+              </template>
+              <el-menu-item
+                v-for="subMenu in menu.children"
+                :key="subMenu.id"
+                :index="formatPath(subMenu.path)"
+                @click="handleMenuClick(subMenu)"
+              >
+                {{ subMenu.menuName }}
+              </el-menu-item>
+            </el-sub-menu>
+            <!-- 没有子菜单 -->
+            <el-menu-item v-else :index="formatPath(menu.path)" @click="handleMenuClick(menu)">
+              <el-icon v-if="menu.icon"><component :is="getIconComponent(menu.icon)" /></el-icon>
+              <span>{{ menu.menuName }}</span>
+            </el-menu-item>
+          </template>
+        </el-menu>
+      </div>
+    </el-header>
+
     <el-container>
-      <el-header>
+      <el-header v-if="!isHorizontal">
         <div class="header-content">
           <span>JavaWeb管理系统</span>
           <div class="header-right">
-            <el-button type="primary" :icon="Refresh" @click="handleRefreshMenu" size="small">
-              系统刷新
-            </el-button>
             <div class="user-info">
               <el-dropdown @command="handleCommand">
                 <span class="el-dropdown-link">
@@ -48,6 +96,16 @@
                   <el-dropdown-menu>
                     <el-dropdown-item command="profile">个人中心</el-dropdown-item>
                     <el-dropdown-item command="password">修改密码</el-dropdown-item>
+                    <el-dropdown-item command="refresh" divided>
+                      <el-icon class="dropdown-item-icon"><Refresh /></el-icon>
+                      系统刷新
+                    </el-dropdown-item>
+                    <el-dropdown-item command="toggleMenu">
+                      <el-icon class="dropdown-item-icon">
+                        <component :is="isHorizontal ? Menu : Expand" />
+                      </el-icon>
+                      切换为{{ isHorizontal ? '纵向' : '横向' }}菜单
+                    </el-dropdown-item>
                     <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -56,6 +114,42 @@
           </div>
         </div>
       </el-header>
+
+      <!-- 横向模式下的控制栏 -->
+      <el-header v-if="isHorizontal" class="control-header">
+        <div class="header-content">
+          <span>JavaWeb管理系统</span>
+          <div class="header-right">
+            <div class="user-info">
+              <el-dropdown @command="handleCommand">
+                <span class="el-dropdown-link">
+                  <el-icon class="user-avatar"><User /></el-icon>
+                  <span class="user-name">{{ userInfo.nickname || userInfo.username }}</span>
+                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                    <el-dropdown-item command="password">修改密码</el-dropdown-item>
+                    <el-dropdown-item command="refresh" divided>
+                      <el-icon class="dropdown-item-icon"><Refresh /></el-icon>
+                      系统刷新
+                    </el-dropdown-item>
+                    <el-dropdown-item command="toggleMenu">
+                      <el-icon class="dropdown-item-icon">
+                        <component :is="isHorizontal ? Menu : Expand" />
+                      </el-icon>
+                      切换为{{ isHorizontal ? '纵向' : '横向' }}菜单
+                    </el-dropdown-item>
+                    <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
+        </div>
+      </el-header>
+
       <div class="notice-bar" v-if="firstUnreadNotice">
         <el-icon class="notice-icon"><Bell /></el-icon>
         <div class="notice-badge" v-if="unreadNoticeCount > 0">{{ unreadNoticeCount }}</div>
@@ -148,7 +242,10 @@ import {
   Monitor,
   Tickets,
   ArrowDown,
-  Refresh
+  Refresh,
+  Expand,
+  Fold,
+  Menu
 } from '@element-plus/icons-vue'
 
 // 图标映射
@@ -180,6 +277,24 @@ const userStore = useUserStore()
 
 const activeMenu = computed(() => route.path)
 const menuList = ref([])
+
+// 菜单状态
+const isCollapsed = ref(false)
+const isHorizontal = ref(false)
+
+// 切换菜单折叠状态
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value
+}
+
+// 切换菜单模式（横向/纵向）
+const toggleMenuMode = () => {
+  isHorizontal.value = !isHorizontal.value
+  // 切换到横向模式时，取消折叠
+  if (isHorizontal.value) {
+    isCollapsed.value = false
+  }
+}
 const notices = ref([])
 const noticeVisible = ref(false)
 const viewNoticeData = ref({})
@@ -252,6 +367,10 @@ const handleCommand = async (command) => {
       confirmPassword: ''
     }
     passwordVisible.value = true
+  } else if (command === 'refresh') {
+    handleRefreshMenu()
+  } else if (command === 'toggleMenu') {
+    toggleMenuMode()
   }
 }
 
@@ -393,6 +512,39 @@ onMounted(() => {
 
 .el-aside {
   background-color: #545c64;
+  transition: width 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.aside-transition {
+  transition: all 0.3s ease;
+}
+
+.el-aside .el-menu {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.menu-collapse-control {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.3s;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-collapse-control:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.collapse-icon {
+  font-size: 20px;
+  transition: transform 0.3s;
 }
 
 .el-header {
@@ -400,6 +552,30 @@ onMounted(() => {
   border-bottom: 1px solid #e6e6e6;
   display: flex;
   align-items: center;
+  padding: 0 20px;
+  height: 60px !important;
+}
+
+.horizontal-header {
+  height: 60px !important;
+  padding: 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.horizontal-menu {
+  width: 100%;
+  height: 100%;
+}
+
+.horizontal-menu .el-menu {
+  border-bottom: none;
+  height: 100%;
+  line-height: 60px;
+}
+
+.control-header {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e6e6e6;
   padding: 0 20px;
 }
 
@@ -438,6 +614,16 @@ onMounted(() => {
 .user-name {
   font-size: 14px;
   color: #303133;
+}
+
+:deep(.el-dropdown-menu__item) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-item-icon {
+  font-size: 16px;
 }
 
 .notice-bar {

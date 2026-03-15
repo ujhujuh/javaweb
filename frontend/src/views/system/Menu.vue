@@ -55,11 +55,20 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="220" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleAdd(row)" v-if="row.menuType !== 'F'">新增</el-button>
             <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-dropdown @command="(command) => handleCommandAction(command, row)">
+              <el-button size="small" type="primary" style="margin-left: 8px;">
+                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="add" v-if="row.menuType !== 'F'">新增子菜单</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -176,6 +185,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { menuApi } from '@/api/system'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 const queryForm = reactive({
   menuName: '',
@@ -300,6 +310,17 @@ const handleDelete = (row) => {
       ElMessage.error('删除失败')
     }
   }).catch(() => {})
+}
+
+const handleCommandAction = (command, row) => {
+  switch (command) {
+    case 'add':
+      handleAdd(row)
+      break
+    case 'delete':
+      handleDelete(row)
+      break
+  }
 }
 
 onMounted(() => {

@@ -41,11 +41,20 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" width="240" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" @click="handleAuthMenu(row)">菜单授权</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-dropdown @command="(command) => handleCommandAction(command, row)">
+              <el-button size="small" type="primary" style="margin-left: 8px;">
+                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="authMenu">菜单授权</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -119,6 +128,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { roleApi, menuApi } from '@/api/system'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 const queryForm = reactive({
   roleName: '',
@@ -316,6 +326,17 @@ const handleExport = async () => {
     ElMessage.success('导出成功')
   } catch (error) {
     ElMessage.error('导出失败')
+  }
+}
+
+const handleCommandAction = (command, row) => {
+  switch (command) {
+    case 'authMenu':
+      handleAuthMenu(row)
+      break
+    case 'delete':
+      handleDelete(row)
+      break
   }
 }
 
