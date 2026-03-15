@@ -1,5 +1,12 @@
 <template>
-  <el-container class="layout-container">
+  <!-- 配置加载中 -->
+  <div v-if="configLoading" class="config-loading">
+    <el-icon class="is-loading" :size="40"><Loading /></el-icon>
+    <div style="margin-top: 10px;">加载中...</div>
+  </div>
+
+  <!-- 配置加载完成 -->
+  <el-container v-else class="layout-container">
     <!-- 纵向菜单模式 -->
     <el-aside v-if="!isHorizontal" :width="isCollapsed ? '64px' : '200px'" class="aside-transition">
       <el-menu
@@ -229,7 +236,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
-import { noticeApi, menuApi } from '@/api/system'
+import { noticeApi, menuApi, userConfigApi } from '@/api/system'
 import MenuItem from '@/components/MenuItem.vue'
 import {
   House,
@@ -245,7 +252,8 @@ import {
   Refresh,
   Expand,
   Fold,
-  Menu
+  Menu,
+  Loading
 } from '@element-plus/icons-vue'
 
 // 图标映射
@@ -278,13 +286,48 @@ const userStore = useUserStore()
 const activeMenu = computed(() => route.path)
 const menuList = ref([])
 
+// 配置加载状态
+const configLoading = ref(true)
+
 // 菜单状态
 const isCollapsed = ref(false)
 const isHorizontal = ref(false)
 
+// 加载用户配置
+const loadUserConfig = async () => {
+  configLoading.value = true
+  try {
+    // 加载菜单折叠状态
+    const collapsedRes = await userConfigApi.get('menu_collapsed')
+    if (collapsedRes.code === 200 && collapsedRes.data.menu_collapsed) {
+      isCollapsed.value = collapsedRes.data.menu_collapsed === 'true'
+    }
+
+    // 加载菜单方向配置
+    const horizontalRes = await userConfigApi.get('menu_horizontal')
+    if (horizontalRes.code === 200 && horizontalRes.data.menu_horizontal) {
+      isHorizontal.value = horizontalRes.data.menu_horizontal === 'true'
+    }
+  } catch (error) {
+    console.error('加载用户配置失败', error)
+  } finally {
+    configLoading.value = false
+  }
+}
+
+// 保存用户配置
+const saveUserConfig = async (configKey, configValue) => {
+  try {
+    await userConfigApi.set(configKey, configValue)
+  } catch (error) {
+    console.error('保存用户配置失败', error)
+  }
+}
+
 // 切换菜单折叠状态
 const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value
+  saveUserConfig('menu_collapsed', isCollapsed.value.toString())
 }
 
 // 切换菜单模式（横向/纵向）
@@ -294,6 +337,7 @@ const toggleMenuMode = () => {
   if (isHorizontal.value) {
     isCollapsed.value = false
   }
+  saveUserConfig('menu_horizontal', isHorizontal.value.toString())
 }
 const notices = ref([])
 const noticeVisible = ref(false)
@@ -497,7 +541,8 @@ const viewNotice = async (notice) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadUserConfig()
   loadMenus()
   loadNotices()
   loadUserNoticeStatus()
@@ -506,6 +551,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.config-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+  color: #409eff;
+}
+
 .layout-container {
   height: 100vh;
 }

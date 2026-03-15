@@ -93,7 +93,21 @@
           </el-col>
         </el-row>
         <el-form-item label="公告内容" prop="noticeContent">
-          <el-input v-model="form.noticeContent" type="textarea" :rows="10" placeholder="请输入公告内容" />
+          <div style="border: 1px solid #ccc">
+            <Toolbar
+              style="border-bottom: 1px solid #ccc"
+              :editor="editorRef"
+              :defaultConfig="toolbarConfig"
+              mode="default"
+            />
+            <Editor
+              style="height: 300px; overflow-y: hidden;"
+              v-model="form.noticeContent"
+              :defaultConfig="editorConfig"
+              mode="default"
+              @onCreated="handleCreated"
+            />
+          </div>
         </el-form-item>
         <el-row>
           <el-col :span="12">
@@ -136,10 +150,37 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, shallowRef } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
 import { noticeApi } from '@/api/system'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+
+// 编辑器实例，必须用 shallowRef
+const editorRef = shallowRef()
+
+// 工具栏配置
+const toolbarConfig = {
+  // 排除某些菜单项
+  // excludeKeys: ['group-video']
+}
+
+// 编辑器配置
+const editorConfig = {
+  placeholder: '请输入公告内容...',
+  MENU_CONF: {}
+}
+
+// 组件销毁时，也及时销毁编辑器
+onBeforeUnmount(() => {
+  const editor = editorRef.value
+  if (editor == null) return
+  editor.destroy()
+})
+
+const handleCreated = (editor) => {
+  editorRef.value = editor
+}
 
 const queryForm = reactive({
   noticeTitle: '',
@@ -289,3 +330,5 @@ onMounted(() => {
   align-items: center;
 }
 </style>
+
+<style src="@wangeditor/editor/dist/css/style.css"></style>

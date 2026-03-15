@@ -575,3 +575,34 @@ export const onlineApi = {
     })
   }
 }
+
+// 用户配置API
+export const userConfigApi = {
+  // 获取用户配置
+  get(configKey) {
+    return request({
+      url: `/system/user/config/${configKey}`,
+      method: 'get'
+    })
+  },
+
+  // 设置用户配置
+  set(configKey, configValue) {
+    return request({
+      url: '/system/user/config',
+      method: 'post',
+      data: {
+        configKey,
+        configValue
+      }
+    })
+  },
+
+  // 删除用户配置
+  delete(configKey) {
+    return request({
+      url: `/system/user/config/${configKey}`,
+      method: 'delete'
+    })
+  }
+}
