@@ -93,4 +93,19 @@ public class SysMenuController {
         sysMenuService.deleteMenuById(id);
         return Result.success();
     }
+
+    @ApiLog("刷新菜单缓存")
+    @PostMapping("/refresh")
+    public Result<Void> refreshCache() {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            Object principal = subject.getPrincipal();
+            if (principal instanceof com.example.javaweb.entity.SysUser) {
+                com.example.javaweb.entity.SysUser user = (com.example.javaweb.entity.SysUser) principal;
+                sysMenuService.refreshUserMenuCache(user.getId());
+                return Result.success();
+            }
+        }
+        return Result.success();
+    }
 }

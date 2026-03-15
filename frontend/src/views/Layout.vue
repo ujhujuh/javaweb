@@ -33,21 +33,26 @@
       <el-header>
         <div class="header-content">
           <span>JavaWeb管理系统</span>
-          <div class="user-info">
-            <el-dropdown @command="handleCommand">
-              <span class="el-dropdown-link">
-                <el-icon class="user-avatar"><User /></el-icon>
-                <span class="user-name">{{ userInfo.nickname || userInfo.username }}</span>
-                <el-icon class="el-icon--right"><arrow-down /></el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                  <el-dropdown-item command="password">修改密码</el-dropdown-item>
-                  <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+          <div class="header-right">
+            <el-button type="primary" :icon="Refresh" @click="handleRefreshMenu" size="small">
+              系统刷新
+            </el-button>
+            <div class="user-info">
+              <el-dropdown @command="handleCommand">
+                <span class="el-dropdown-link">
+                  <el-icon class="user-avatar"><User /></el-icon>
+                  <span class="user-name">{{ userInfo.nickname || userInfo.username }}</span>
+                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                    <el-dropdown-item command="password">修改密码</el-dropdown-item>
+                    <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </div>
         </div>
       </el-header>
@@ -142,7 +147,8 @@ import {
   Bell,
   Monitor,
   Tickets,
-  ArrowDown
+  ArrowDown,
+  Refresh
 } from '@element-plus/icons-vue'
 
 // 图标映射
@@ -277,6 +283,17 @@ const handleUpdatePassword = async () => {
   })
 }
 
+const handleRefreshMenu = async () => {
+  try {
+    await menuApi.refresh()
+    ElMessage.success('菜单缓存已刷新，正在重新加载...')
+    // 重新加载菜单
+    await loadMenus()
+  } catch (error) {
+    ElMessage.error(error.message || '刷新菜单失败')
+  }
+}
+
 const handleMenuClick = (menu) => {
   if (menu.path) {
     router.push(formatPath(menu.path))
@@ -391,6 +408,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .el-dropdown-link {

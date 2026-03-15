@@ -244,6 +244,14 @@ export const menuApi = {
       url: `/system/menu/${id}`,
       method: 'delete'
     })
+  },
+
+  // 刷新菜单缓存
+  refresh() {
+    return request({
+      url: '/system/menu/refresh',
+      method: 'post'
+    })
   }
 }
 

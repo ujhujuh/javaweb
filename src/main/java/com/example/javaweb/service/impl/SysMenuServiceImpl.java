@@ -6,6 +6,7 @@ import com.example.javaweb.entity.SysMenu;
 import com.example.javaweb.mapper.SysMenuMapper;
 import com.example.javaweb.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +22,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Autowired
     private SysMenuMapper sysMenuMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private static final String MENU_CACHE_PREFIX = "menu:user:";
+    private static final long CACHE_EXPIRE_HOURS = 1;
 
     @Override
     public List<SysMenu> selectMenuList(SysMenu menu) {
@@ -65,7 +73,37 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<SysMenu> selectMenusByUserId(Long userId) {
-        return sysMenuMapper.selectMenusByUserId(userId);
+        String cacheKey = MENU_CACHE_PREFIX + userId;
+        List<SysMenu> menus = (List<SysMenu>) redisTemplate.opsForValue().get(cacheKey);
+
+        if (menus != null) {
+            return menus;
+        }
+
+        // 缓存不存在，从数据库查询
+        menus = sysMenuMapper.selectMenusByUserId(userId);
+
+        // 存入缓存，设置1小时过期
+        if (menus != null && !menus.isEmpty()) {
+            redisTemplate.opsForValue().set(cacheKey, menus, CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
+        }
+
+        return menus;
+    }
+
+    /**
+     * 刷新用户菜单缓存
+     */
+    public void refreshUserMenuCache(Long userId) {
+        String cacheKey = MENU_CACHE_PREFIX + userId;
+        redisTemplate.delete(cacheKey);
+    }
+
+    /**
+     * 刷新所有用户菜单缓存
+     */
+    public void refreshAllUserMenuCache() {
+        redisTemplate.delete(redisTemplate.keys(MENU_CACHE_PREFIX + "*"));
     }
 
     @Override

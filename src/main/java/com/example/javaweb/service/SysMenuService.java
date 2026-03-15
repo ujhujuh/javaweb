@@ -21,6 +21,10 @@ public interface SysMenuService extends IService<SysMenu> {
 
     List<SysMenu> selectMenusByUserId(Long userId);
 
+    void refreshUserMenuCache(Long userId);
+
+    void refreshAllUserMenuCache();
+
     boolean hasChildByMenuId(Long menuId);
 
     boolean checkMenuNameUnique(SysMenu menu);
