@@ -153,7 +153,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount, shallowRef } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
-import { noticeApi } from '@/api/system'
+import { noticeApi, fileApi } from '@/api/system'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 
 // 编辑器实例，必须用 shallowRef
@@ -168,7 +168,33 @@ const toolbarConfig = {
 // 编辑器配置
 const editorConfig = {
   placeholder: '请输入公告内容...',
-  MENU_CONF: {}
+  MENU_CONF: {
+    // 配置上传图片
+    uploadImage: {
+      // 自定义上传
+      async customUpload(file, insertFn) {
+        try {
+          // 调用文件上传API
+          const res = await fileApi.uploadImage(file)
+
+          // 检查上传结果
+          if (res.errno === 0 && res.data && res.data.url) {
+            // 插入图片到编辑器
+            insertFn(res.data.url, res.data.alt || '图片', res.data.href || res.data.url)
+          } else {
+            ElMessage.error(res.message || '图片上传失败')
+          }
+        } catch (error) {
+          console.error('图片上传失败:', error)
+          ElMessage.error('图片上传失败')
+        }
+      },
+      // 限制图片大小（10MB）
+      maxFileSize: 10 * 1024 * 1024,
+      // 限制图片类型
+      allowedFileTypes: ['image/*']
+    }
+  }
 }
 
 // 组件销毁时，也及时销毁编辑器

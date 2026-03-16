@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
         return Result.failed(e.getCode(), e.getMessage());
     }
 
+    @ExceptionHandler(FileUploadException.class)
+    public Result<?> handleFileUploadException(FileUploadException e) {
+        log.error("文件上传异常: {}", e.getMessage());
+        return Result.failed(e.getCode(), e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<?> handleValidException(MethodArgumentNotValidException e) {
         FieldError fieldError = e.getBindingResult().getFieldError();

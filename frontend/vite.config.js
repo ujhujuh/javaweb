@@ -43,6 +43,10 @@ export default defineConfig({
       '/druid': {
         target: 'http://localhost:8080',
         changeOrigin: true
+      },
+      '/javaweb': {
+        target: 'http://110.40.136.241:9000',
+        changeOrigin: true
       }
     }
   }

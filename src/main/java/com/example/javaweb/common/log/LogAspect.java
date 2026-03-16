@@ -76,7 +76,7 @@ public class LogAspect {
             operLog.setOperUrl(request != null ? request.getRequestURI() : "");
             operLog.setOperIp(request != null ? request.getRemoteAddr() : "");
             operLog.setOperLocation("未知");
-            operLog.setOperParam(truncateString(JSON.toJSONString(joinPoint.getArgs()), 2000));
+            operLog.setOperParam(truncateString(filterAndSerializeArgs(joinPoint.getArgs()), 2000));
             operLog.setJsonResult(result != null ? truncateString(JSON.toJSONString(result), 2000) : "");
             operLog.setStatus(exception != null ? 1 : 0);
             operLog.setErrorMsg(exception != null ? exception.getMessage() : "");
@@ -137,6 +137,35 @@ public class LogAspect {
             return str;
         }
         return str.substring(0, maxLength);
+    }
+
+    /**
+     * 过滤并序列化参数，排除MultipartFile等不可序列化的对象
+     */
+    private String filterAndSerializeArgs(Object[] args) {
+        if (args == null || args.length == 0) {
+            return "";
+        }
+
+        try {
+            Object[] filteredArgs = new Object[args.length];
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                if (arg == null) {
+                    filteredArgs[i] = null;
+                } else if (arg instanceof org.springframework.web.multipart.MultipartFile) {
+                    // MultipartFile对象，只记录文件名和大小
+                    org.springframework.web.multipart.MultipartFile file = (org.springframework.web.multipart.MultipartFile) arg;
+                    filteredArgs[i] = "[文件名: " + file.getOriginalFilename() + ", 大小: " + file.getSize() + " bytes]";
+                } else {
+                    filteredArgs[i] = arg;
+                }
+            }
+            return JSON.toJSONString(filteredArgs);
+        } catch (Exception e) {
+            log.error("序列化参数失败", e);
+            return "[参数序列化失败]";
+        }
     }
 
 }

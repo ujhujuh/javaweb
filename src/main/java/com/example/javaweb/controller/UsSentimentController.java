@@ -4,17 +4,24 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.UsSentimentQueryDTO;
 import com.example.javaweb.entity.UsSentiment;
 import com.example.javaweb.service.UsSentimentService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 美股情绪指标Controller
+ */
 @RestController
 @RequestMapping("/api/toolbox/us-sentiment")
+@Validated
 public class UsSentimentController {
 
     @Autowired
@@ -23,15 +30,17 @@ public class UsSentimentController {
     @ApiLog("分页查询美股情绪指标")
     @RequiresPermissions("toolbox:us-sentiment:list")
     @GetMapping("/list")
-    public Result<IPage<UsSentiment>> list(@RequestParam(defaultValue = "1") Integer current,
-                                            @RequestParam(defaultValue = "10") Integer size,
-                                            @RequestParam(required = false) String startDate,
-                                            @RequestParam(required = false) String endDate,
-                                            @RequestParam(required = false) String satisfiedCount,
-                                            @RequestParam(required = false) String notificationSent) {
-        Page<UsSentiment> page = new Page<>(current, size);
+    public Result<IPage<UsSentiment>> list(@Valid UsSentimentQueryDTO queryDTO) {
+        Page<UsSentiment> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         UsSentiment usSentiment = new UsSentiment();
-        return Result.success(usSentimentService.selectUsSentimentList(page, usSentiment, startDate, endDate, satisfiedCount, notificationSent));
+        return Result.success(usSentimentService.selectUsSentimentList(
+                page,
+                usSentiment,
+                queryDTO.getStartDate(),
+                queryDTO.getEndDate(),
+                queryDTO.getSatisfiedCount(),
+                queryDTO.getNotificationSent()
+        ));
     }
 
     @ApiLog("查询最新美股情绪指标")

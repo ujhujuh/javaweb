@@ -471,4 +471,44 @@ INSERT INTO `sys_notice` (`id`, `notice_title`, `notice_type`, `notice_content`,
 (4, '假期放假通知', '2', '<p>根据国家法定节假日安排，现将2025年春节放假安排通知如下：</p><p><strong>放假时间：</strong>2025年1月28日至2月3日，共7天。</p><p><strong>复工时间：</strong>2025年2月4日（星期二）。</p><p>请各部门提前做好工作安排，确保节前节后工作顺利衔接。</p><p>祝大家春节快乐，阖家幸福！</p>', '0', 'admin', '放假通知'),
 (5, '系统安全提醒', '1', '<p>为保障系统安全，请各位用户注意以下几点：</p><ul><li>定期修改密码，建议使用强密码</li><li>不要将账号密码告知他人</li><li>离开时请及时退出系统</li><li>发现异常情况及时联系管理员</li></ul><p>感谢您的配合！</p>', '0', 'admin', '安全提醒');
 
-SET FOREIGN_KEY_CHECKS = 1;
+-- 用户配置表
+CREATE TABLE IF NOT EXISTS `sys_user_config` (
+                                                 `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '配置ID',
+    `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
+    `config_key` VARCHAR(100) NOT NULL COMMENT '配置键',
+    `config_value` VARCHAR(500) DEFAULT NULL COMMENT '配置值',
+    `create_by` VARCHAR(64) DEFAULT NULL COMMENT '创建者',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by` VARCHAR(64) DEFAULT NULL COMMENT '更新者',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_user_config` (`user_id`, `config_key`),
+    KEY `idx_user_id` (`user_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户配置表';
+
+-- =============================================
+-- 美股情绪指标表
+-- =============================================
+DROP TABLE IF EXISTS `us_sentiment`;
+CREATE TABLE `us_sentiment` (
+                                `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+                                `vix` DECIMAL(10, 2) DEFAULT NULL COMMENT 'VIX指数（恐慌指数）',
+                                `fear_greed` DECIMAL(10, 2) DEFAULT NULL COMMENT 'Fear & Greed指数（恐惧贪婪指数）',
+                                `naaim` DECIMAL(10, 2) DEFAULT NULL COMMENT 'NAAIM指数（机构仓位指数）',
+                                `rsi_sp500` DECIMAL(10, 2) DEFAULT NULL COMMENT 'RSI标普500指数（相对强弱指数）',
+                                `record_date` DATE NOT NULL COMMENT '记录日期（前一个工作日）',
+                                `vix_condition` CHAR(1) DEFAULT '0' COMMENT 'VIX是否满足条件（0否 1是）',
+                                `fear_greed_condition` CHAR(1) DEFAULT '0' COMMENT 'Fear & Greed是否满足条件（0否 1是）',
+                                `naaim_condition` CHAR(1) DEFAULT '0' COMMENT 'NAAIM是否满足条件（0否 1是）',
+                                `rsi_condition` CHAR(1) DEFAULT '0' COMMENT 'RSI是否满足条件（0否 1是）',
+                                `satisfied_count` INT(2) DEFAULT 0 COMMENT '满足条件的数量（0-4）',
+                                `notification_sent` CHAR(1) DEFAULT '0' COMMENT '是否已发送通知（0否 1是）',
+                                `create_by` VARCHAR(64) DEFAULT NULL COMMENT '创建者',
+                                `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                `update_by` VARCHAR(64) DEFAULT NULL COMMENT '更新者',
+                                `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                `remark` VARCHAR(500) DEFAULT NULL COMMENT '备注',
+                                PRIMARY KEY (`id`),
+                                UNIQUE KEY `uk_record_date` (`record_date`),
+                                KEY `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='美股情绪指标表';

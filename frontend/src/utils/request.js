@@ -29,6 +29,18 @@ service.interceptors.response.use(
     }
 
     const res = response.data
+
+    // 特殊处理：wangEditor 格式（用于富文本编辑器图片上传）
+    // wangEditor 格式: { errno: 0, message: '...', data: {...} }
+    if (res.hasOwnProperty('errno')) {
+      if (res.errno !== 0) {
+        ElMessage.error(res.message || '上传失败')
+        return Promise.reject(new Error(res.message || '上传失败'))
+      }
+      return res
+    }
+
+    // 标准格式: { code: 200, message: '...', data: {...} }
     if (res.code !== 200) {
       ElMessage.error(res.message || '请求失败')
       if (res.code === 401) {

@@ -650,3 +650,46 @@ export const usSentimentApi = {
     })
   }
 }
+
+// 文件上传API
+export const fileApi = {
+  // 上传图片（用于富文本编辑器）
+  uploadImage(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request({
+      url: '/file/upload/image',
+      method: 'post',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+
+  // 通用文件上传
+  upload(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request({
+      url: '/file/upload',
+      method: 'post',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+
+  // 删除文件
+  delete(bucketName, fileName) {
+    return request({
+      url: '/file/delete',
+      method: 'delete',
+      params: {
+        bucketName,
+        fileName
+      }
+    })
+  }
+}
