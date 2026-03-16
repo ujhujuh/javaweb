@@ -67,6 +67,11 @@ const routes = [
         path: '/system/online',
         name: 'Online',
         component: () => import('@/views/system/Online.vue')
+      },
+      {
+        path: '/toolbox/us-sentiment',
+        name: 'UsSentiment',
+        component: () => import('@/views/toolbox/UsSentiment.vue')
       }
     ]
   }

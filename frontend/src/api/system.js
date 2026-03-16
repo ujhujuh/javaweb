@@ -606,3 +606,47 @@ export const userConfigApi = {
     })
   }
 }
+
+// 美股情绪指标监控API
+export const usSentimentApi = {
+  // 分页查询美股情绪指标
+  list(params) {
+    return request({
+      url: '/toolbox/us-sentiment/list',
+      method: 'get',
+      params
+    })
+  },
+
+  // 查询最新美股情绪指标
+  latest() {
+    return request({
+      url: '/toolbox/us-sentiment/latest',
+      method: 'get'
+    })
+  },
+
+  // 根据ID查询美股情绪指标
+  getById(id) {
+    return request({
+      url: `/toolbox/us-sentiment/${id}`,
+      method: 'get'
+    })
+  },
+
+  // 手动收集美股情绪指标
+  collect() {
+    return request({
+      url: '/toolbox/us-sentiment/collect',
+      method: 'post'
+    })
+  },
+
+  // 删除美股情绪指标
+  delete(ids) {
+    return request({
+      url: `/toolbox/us-sentiment/${ids.join(',')}`,
+      method: 'delete'
+    })
+  }
+}
