@@ -127,24 +127,43 @@
     </el-dialog>
 
     <!-- 查看对话框 -->
-    <el-dialog v-model="viewVisible" title="公告详情" width="700px">
-      <el-descriptions :column="1" border>
-        <el-descriptions-item label="公告标题">{{ viewData.noticeTitle }}</el-descriptions-item>
-        <el-descriptions-item label="公告类型">
-          <el-tag v-if="viewData.noticeType === '1'" type="primary">通知</el-tag>
-          <el-tag v-else-if="viewData.noticeType === '2'" type="success">公告</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="公告状态">
-          <el-tag :type="viewData.status === '0' ? 'success' : 'danger'">
-            {{ viewData.status === '0' ? '正常' : '关闭' }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="公告内容">
-          <div v-html="viewData.noticeContent"></div>
-        </el-descriptions-item>
-        <el-descriptions-item label="创建者">{{ viewData.createBy }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ viewData.createTime }}</el-descriptions-item>
-      </el-descriptions>
+    <el-dialog v-model="viewVisible" title="公告详情" width="800px" class="notice-detail-dialog">
+      <template #header>
+        <div class="dialog-header">
+          <span>公告详情</span>
+        </div>
+      </template>
+      <div class="notice-detail-container">
+        <div class="notice-detail-info">
+          <div class="info-item">
+            <span class="info-label">公告标题：</span>
+            <span class="info-value">{{ viewData.noticeTitle }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">公告类型：</span>
+            <el-tag v-if="viewData.noticeType === '1'" type="primary" size="small">通知</el-tag>
+            <el-tag v-else-if="viewData.noticeType === '2'" type="success" size="small">公告</el-tag>
+          </div>
+          <div class="info-item">
+            <span class="info-label">公告状态：</span>
+            <el-tag :type="viewData.status === '0' ? 'success' : 'danger'" size="small">
+              {{ viewData.status === '0' ? '正常' : '关闭' }}
+            </el-tag>
+          </div>
+          <div class="info-item">
+            <span class="info-label">创建者：</span>
+            <span class="info-value">{{ viewData.createBy }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">创建时间：</span>
+            <span class="info-value">{{ viewData.createTime }}</span>
+          </div>
+        </div>
+        <div class="notice-detail-divider"></div>
+        <div class="notice-detail-content">
+          <div class="content-wrapper" v-html="viewData.noticeContent"></div>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -354,6 +373,152 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* 公告详情对话框样式 */
+.notice-detail-dialog :deep(.el-dialog__header) {
+  padding: 20px 24px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.notice-detail-dialog :deep(.el-dialog__body) {
+  padding: 24px;
+}
+
+.dialog-header {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.notice-detail-container {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.notice-detail-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.info-label {
+  color: #909399;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.info-value {
+  color: #303133;
+  font-weight: 500;
+}
+
+.notice-detail-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #dcdfe6, transparent);
+  margin: 16px 0;
+}
+
+.notice-detail-content {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 200px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  line-height: 1.8;
+  color: #303133;
+}
+
+.content-wrapper :deep(p) {
+  margin-bottom: 12px;
+}
+
+.content-wrapper :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 12px 0;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content-wrapper :deep(img:hover) {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.content-wrapper :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.content-wrapper :deep(table td),
+.content-wrapper :deep(table th) {
+  border: 1px solid #dcdfe6;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.content-wrapper :deep(table th) {
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
+
+.content-wrapper :deep(ul),
+.content-wrapper :deep(ol) {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.content-wrapper :deep(li) {
+  margin-bottom: 6px;
+}
+
+.content-wrapper :deep(blockquote) {
+  border-left: 4px solid #409eff;
+  padding-left: 16px;
+  margin: 12px 0;
+  color: #606266;
+  background: #f5f7fa;
+  padding: 12px 16px;
+}
+
+.content-wrapper :deep(code) {
+  background: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #e6a23c;
+}
+
+.content-wrapper :deep(pre) {
+  background: #282c34;
+  color: #abb2bf;
+  padding: 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.content-wrapper :deep(pre code) {
+  background: transparent;
+  color: inherit;
+  padding: 0;
 }
 </style>
 

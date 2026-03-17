@@ -23,7 +23,7 @@ public class MinioUtil {
     private com.example.javaweb.config.MinioConfig minioConfig;
 
     /**
-     * 判断bucket是否存在，不存在则创建
+     * 判断bucket是否存在，不存在则创建并设置公开策略
      */
     public void existBucket(String name) {
         try {
@@ -31,7 +31,27 @@ public class MinioUtil {
             if (!exists) {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(name).build());
             }
+            // 设置bucket为公开读取
+            String policy = "{\n" +
+                    "  \"Version\": \"2012-10-17\",\n" +
+                    "  \"Statement\": [\n" +
+                    "    {\n" +
+                    "      \"Effect\": \"Allow\",\n" +
+                    "      \"Principal\": {\"AWS\": [\"*\"]},\n" +
+                    "      \"Action\": [\"s3:GetObject\"],\n" +
+                    "      \"Resource\": [\"arn:aws:s3:::" + name + "/*\"]\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}";
+            minioClient.setBucketPolicy(
+                    SetBucketPolicyArgs.builder()
+                            .bucket(name)
+                            .config(policy)
+                            .build()
+            );
         } catch (Exception e) {
+            // 记录详细错误信息
+            System.err.println("设置bucket策略失败: " + e.getMessage());
             e.printStackTrace();
         }
     }
