@@ -89,6 +89,9 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/api/auth/userInfo", "anon");
         filterChainDefinitionMap.put("/api/system/notice/latest", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
+        filterChainDefinitionMap.put("/api/userprofile/software", "anon");
+        filterChainDefinitionMap.put("/api/userprofile/file", "anon");
+        filterChainDefinitionMap.put("/api/userprofile/browser", "anon");
         filterChainDefinitionMap.put("/**", "jwt");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

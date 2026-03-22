@@ -42,7 +42,6 @@ public class UpBrowserBehaviorController {
     }
 
     @ApiLog("新增浏览器行为记录")
-    @RequiresPermissions("userprofile:add")
     @PostMapping
     public Result<Void> add(@RequestBody UpBrowserBehavior behavior) {
         upBrowserBehaviorService.save(behavior);

@@ -42,7 +42,6 @@ public class UpFileOperationController {
     }
 
     @ApiLog("新增文件操作记录")
-    @RequiresPermissions("userprofile:add")
     @PostMapping
     public Result<Void> add(@RequestBody UpFileOperation operation) {
         upFileOperationService.save(operation);

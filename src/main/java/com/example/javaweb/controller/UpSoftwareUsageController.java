@@ -41,7 +41,6 @@ public class UpSoftwareUsageController {
     }
 
     @ApiLog("新增软件使用记录")
-    @RequiresPermissions("userprofile:add")
     @PostMapping
     public Result<Void> add(@RequestBody UpSoftwareUsage usage) {
         upSoftwareUsageService.save(usage);

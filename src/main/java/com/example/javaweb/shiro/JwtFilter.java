@@ -32,7 +32,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             "/auth/login",
             "/auth/register",
             "/auth/unauthorized",
-            "/druid"
+            "/druid",
+            "/api/userprofile/software",
+            "/api/userprofile/file",
+            "/api/userprofile/browser"
     );
 
     @Override
