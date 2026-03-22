@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.javaweb.mapper.UpUserProfileMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.javaweb.entity.UpUserProfile">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="profileDate" column="profile_date" jdbcType="DATE"/>
+        <result property="activityLevel" column="activity_level" jdbcType="VARCHAR"/>
+        <result property="usagePeriod" column="usage_period" jdbcType="VARCHAR"/>
+        <result property="deviceDependency" column="device_dependency" jdbcType="VARCHAR"/>
+        <result property="workRhythm" column="work_rhythm" jdbcType="VARCHAR"/>
+        <result property="softwarePreference" column="software_preference" jdbcType="VARCHAR"/>
+        <result property="softwareDiversity" column="software_diversity" jdbcType="INTEGER"/>
+        <result property="professionalLevel" column="professional_level" jdbcType="VARCHAR"/>
+        <result property="browserPreference" column="browser_preference" jdbcType="VARCHAR"/>
+        <result property="visitCategory" column="visit_category" jdbcType="VARCHAR"/>
+        <result property="onlineDuration" column="online_duration" jdbcType="INTEGER"/>
+        <result property="softwareStartCount" column="software_start_count" jdbcType="INTEGER"/>
+        <result property="fileOperationCount" column="file_operation_count" jdbcType="INTEGER"/>
+        <result property="browserVisitCount" column="browser_visit_count" jdbcType="INTEGER"/>
+        <result property="totalUsageDuration" column="total_usage_duration" jdbcType="INTEGER"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectByUserIdAndDate" resultMap="BaseResultMap">
+        SELECT * FROM up_user_profile
+        WHERE user_id = #{userId} AND profile_date = #{profileDate}
+    </select>
+
+    <select id="selectHistoryByUserId" resultMap="BaseResultMap">
+        SELECT * FROM up_user_profile
+        WHERE user_id = #{userId}
+        ORDER BY profile_date DESC
+    </select>
+
+    <select id="selectByDateRange" resultMap="BaseResultMap">
+        SELECT * FROM up_user_profile
+        WHERE user_id = #{userId}
+        AND profile_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY profile_date DESC
+    </select>
+
+</mapper>

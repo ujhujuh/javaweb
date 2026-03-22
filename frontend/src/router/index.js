@@ -72,6 +72,11 @@ const routes = [
         path: '/toolbox/us-sentiment',
         name: 'UsSentiment',
         component: () => import('@/views/toolbox/UsSentiment.vue')
+      },
+      {
+        path: '/userprofile',
+        name: 'UserProfile',
+        component: () => import('@/views/userprofile/UserProfile.vue')
       }
     ]
   }
