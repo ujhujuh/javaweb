@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.UpFileOperationQueryDTO;
 import com.example.javaweb.entity.UpFileOperation;
 import com.example.javaweb.service.UpFileOperationService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -23,14 +24,12 @@ public class UpFileOperationController {
     @ApiLog("分页查询文件操作记录")
     @RequiresPermissions("userprofile:query")
     @GetMapping("/list")
-    public Result<IPage<UpFileOperation>> list(@RequestParam(defaultValue = "1") Integer current,
-                                                @RequestParam(defaultValue = "10") Integer size,
-                                                Long userId, String operationType, String fileType) {
-        Page<UpFileOperation> page = new Page<>(current, size);
+    public Result<IPage<UpFileOperation>> list(UpFileOperationQueryDTO queryDTO) {
+        Page<UpFileOperation> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         UpFileOperation operation = new UpFileOperation();
-        operation.setUserId(userId);
-        operation.setOperationType(operationType);
-        operation.setFileType(fileType);
+        operation.setUserId(queryDTO.getUserId());
+        operation.setOperationType(queryDTO.getOperationType());
+        operation.setFileType(queryDTO.getFileType());
         return Result.success(upFileOperationService.selectList(page, operation));
     }
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.SysNoticeQueryDTO;
 import com.example.javaweb.entity.SysNotice;
 import com.example.javaweb.entity.SysUser;
 import com.example.javaweb.entity.SysUserNotice;
@@ -38,16 +39,12 @@ public class SysNoticeController {
     @ApiLog("分页查询公告")
     @RequiresPermissions("system:notice:list")
     @GetMapping("/list")
-    public Result<IPage<SysNotice>> list(@RequestParam(defaultValue = "1") Integer current,
-                                          @RequestParam(defaultValue = "10") Integer size,
-                                          @RequestParam(required = false) String noticeTitle,
-                                          @RequestParam(required = false) String noticeType,
-                                          @RequestParam(required = false) String status) {
-        Page<SysNotice> page = new Page<>(current, size);
+    public Result<IPage<SysNotice>> list(SysNoticeQueryDTO queryDTO) {
+        Page<SysNotice> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         SysNotice notice = new SysNotice();
-        notice.setNoticeTitle(noticeTitle);
-        notice.setNoticeType(noticeType);
-        notice.setStatus(status);
+        notice.setNoticeTitle(queryDTO.getNoticeTitle());
+        notice.setNoticeType(queryDTO.getNoticeType());
+        notice.setStatus(queryDTO.getStatus());
         return Result.success(sysNoticeService.selectNoticeList(page, notice));
     }
 
@@ -64,7 +61,7 @@ public class SysNoticeController {
     public Result<List<SysUserNotice>> userNoticeStatus(@RequestHeader("Authorization") String token) {
         String username = jwtUtil.getUsernameFromToken(token);
         SysUser user = sysUserMapper.selectOne(
-            new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
+                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
         );
         if (user == null) {
             return Result.failed("用户不存在");
@@ -77,7 +74,7 @@ public class SysNoticeController {
     public Result<Void> markAsRead(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         String username = jwtUtil.getUsernameFromToken(token);
         SysUser user = sysUserMapper.selectOne(
-            new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
+                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
         );
         if (user == null) {
             return Result.failed("用户不存在");

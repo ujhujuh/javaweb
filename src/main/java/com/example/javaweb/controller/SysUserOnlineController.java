@@ -2,6 +2,7 @@ package com.example.javaweb.controller;
 
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.SysUserOnlineQueryDTO;
 import com.example.javaweb.entity.SysUserOnline;
 import com.example.javaweb.service.SysUserOnlineService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -20,10 +21,12 @@ public class SysUserOnlineController {
     @ApiLog("查询在线用户")
     @RequiresPermissions("system:online:list")
     @GetMapping("/list")
-    public Result<List<SysUserOnline>> list(@RequestParam(required = false) String loginName,
-                                              @RequestParam(required = false) String ipaddr,
-                                              @RequestParam(required = false) String loginLocation) {
-        return Result.success(sysUserOnlineService.selectOnlineList(loginName, ipaddr, loginLocation));
+    public Result<List<SysUserOnline>> list(SysUserOnlineQueryDTO queryDTO) {
+        return Result.success(sysUserOnlineService.selectOnlineList(
+                queryDTO.getLoginName(),
+                queryDTO.getIpaddr(),
+                queryDTO.getLoginLocation()
+        ));
     }
 
     @ApiLog("强退用户")

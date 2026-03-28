@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.SysDictDataQueryDTO;
+import com.example.javaweb.dto.SysDictTypeQueryDTO;
 import com.example.javaweb.entity.SysDictData;
 import com.example.javaweb.entity.SysDictType;
 import com.example.javaweb.service.SysDictDataService;
@@ -28,16 +30,12 @@ public class SysDictController {
     @ApiLog("分页查询字典类型")
     @RequiresPermissions("system:dict:list")
     @GetMapping("/type/list")
-    public Result<IPage<SysDictType>> typeList(@RequestParam(defaultValue = "1") Integer current,
-                                              @RequestParam(defaultValue = "10") Integer size,
-                                              @RequestParam(required = false) String dictName,
-                                              @RequestParam(required = false) String dictType,
-                                              @RequestParam(required = false) String status) {
-        Page<SysDictType> page = new Page<>(current, size);
+    public Result<IPage<SysDictType>> typeList(SysDictTypeQueryDTO queryDTO) {
+        Page<SysDictType> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         SysDictType dictTypeObj = new SysDictType();
-        dictTypeObj.setDictName(dictName);
-        dictTypeObj.setDictType(dictType);
-        dictTypeObj.setStatus(status);
+        dictTypeObj.setDictName(queryDTO.getDictName());
+        dictTypeObj.setDictType(queryDTO.getDictType());
+        dictTypeObj.setStatus(queryDTO.getStatus());
         return Result.success(sysDictTypeService.selectDictTypeList(page, dictTypeObj));
     }
 
@@ -87,16 +85,12 @@ public class SysDictController {
     @ApiLog("分页查询字典数据")
     @RequiresPermissions("system:dict:list")
     @GetMapping("/data/list")
-    public Result<IPage<SysDictData>> dataList(@RequestParam(defaultValue = "1") Integer current,
-                                              @RequestParam(defaultValue = "10") Integer size,
-                                              @RequestParam(required = false) String dictLabel,
-                                              @RequestParam(required = false) String dictType,
-                                              @RequestParam(required = false) String status) {
-        Page<SysDictData> page = new Page<>(current, size);
+    public Result<IPage<SysDictData>> dataList(SysDictDataQueryDTO queryDTO) {
+        Page<SysDictData> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         SysDictData dictData = new SysDictData();
-        dictData.setDictLabel(dictLabel);
-        dictData.setDictType(dictType);
-        dictData.setStatus(status);
+        dictData.setDictLabel(queryDTO.getDictLabel());
+        dictData.setDictType(queryDTO.getDictType());
+        dictData.setStatus(queryDTO.getStatus());
         return Result.success(sysDictDataService.selectDictDataList(page, dictData));
     }
 

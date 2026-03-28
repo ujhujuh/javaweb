@@ -3,9 +3,8 @@ package com.example.javaweb.dto;
 import lombok.Data;
 
 @Data
-public class SysUserQueryDTO extends PageQueryDTO {
+public class SysLoginLogQueryDTO extends PageQueryDTO {
     private String username;
-    private String nickname;
-    private String phone;
+    private String ipaddr;
     private String status;
 }

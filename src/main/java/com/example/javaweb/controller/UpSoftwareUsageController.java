@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.UpSoftwareUsageQueryDTO;
 import com.example.javaweb.entity.UpSoftwareUsage;
 import com.example.javaweb.service.UpSoftwareUsageService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -23,13 +24,11 @@ public class UpSoftwareUsageController {
     @ApiLog("分页查询软件使用记录")
     @RequiresPermissions("userprofile:query")
     @GetMapping("/list")
-    public Result<IPage<UpSoftwareUsage>> list(@RequestParam(defaultValue = "1") Integer current,
-                                                @RequestParam(defaultValue = "10") Integer size,
-                                                Long userId, String softwareName) {
-        Page<UpSoftwareUsage> page = new Page<>(current, size);
+    public Result<IPage<UpSoftwareUsage>> list(UpSoftwareUsageQueryDTO queryDTO) {
+        Page<UpSoftwareUsage> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         UpSoftwareUsage usage = new UpSoftwareUsage();
-        usage.setUserId(userId);
-        usage.setSoftwareName(softwareName);
+        usage.setUserId(queryDTO.getUserId());
+        usage.setSoftwareName(queryDTO.getSoftwareName());
         return Result.success(upSoftwareUsageService.selectList(page, usage));
     }
 

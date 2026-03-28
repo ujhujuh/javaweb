@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.UpBrowserBehaviorQueryDTO;
 import com.example.javaweb.entity.UpBrowserBehavior;
 import com.example.javaweb.service.UpBrowserBehaviorService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -23,14 +24,12 @@ public class UpBrowserBehaviorController {
     @ApiLog("分页查询浏览器行为记录")
     @RequiresPermissions("userprofile:query")
     @GetMapping("/list")
-    public Result<IPage<UpBrowserBehavior>> list(@RequestParam(defaultValue = "1") Integer current,
-                                                  @RequestParam(defaultValue = "10") Integer size,
-                                                  Long userId, String url, String browserType) {
-        Page<UpBrowserBehavior> page = new Page<>(current, size);
+    public Result<IPage<UpBrowserBehavior>> list(UpBrowserBehaviorQueryDTO queryDTO) {
+        Page<UpBrowserBehavior> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         UpBrowserBehavior behavior = new UpBrowserBehavior();
-        behavior.setUserId(userId);
-        behavior.setUrl(url);
-        behavior.setBrowserType(browserType);
+        behavior.setUserId(queryDTO.getUserId());
+        behavior.setUrl(queryDTO.getUrl());
+        behavior.setBrowserType(queryDTO.getBrowserType());
         return Result.success(upBrowserBehaviorService.selectList(page, behavior));
     }
 

@@ -495,3 +495,7 @@ mysql -u root -p < init.sql
 
 1. 默认使用中文回复。
 2. 每次修改完代码后，必须自行执行验证（如编译、测试或关键流程检查）并反馈验证结果。
+3. 严格遵循分层职责：Controller 层禁止编写业务逻辑，仅负责参数接收/校验、权限控制、调用 Service、返回统一响应；业务逻辑、事务处理与数据组装必须下沉到 Service 层。
+4. 所有分页查询接口必须统一使用分页查询对象封装 `current`、`size`（统一继承 `PageQueryDTO`），禁止在 Controller 方法中零散声明分页参数。
+5. Controller 接口入参超过 2 个时，必须封装为请求对象（QueryDTO/RequestDTO）进行接收，避免参数平铺。
+6. 接口的用户身份获取遵循项目统一方式：登录态接口优先通过 Shiro `SecurityUtils.getSubject().getPrincipal()` 获取当前用户；仅匿名可访问场景允许保留可选 token 解析作为补充。

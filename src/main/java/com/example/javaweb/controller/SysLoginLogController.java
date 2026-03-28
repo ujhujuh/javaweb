@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.SysLoginLogQueryDTO;
 import com.example.javaweb.entity.SysLoginLog;
 import com.example.javaweb.service.SysLoginLogService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -20,16 +21,12 @@ public class SysLoginLogController {
     @ApiLog("分页查询登录日志")
     @RequiresPermissions("system:loginlog:list")
     @GetMapping("/list")
-    public Result<IPage<SysLoginLog>> list(@RequestParam(defaultValue = "1") Integer current,
-                                          @RequestParam(defaultValue = "10") Integer size,
-                                          @RequestParam(required = false) String username,
-                                          @RequestParam(required = false) String ipaddr,
-                                          @RequestParam(required = false) String status) {
-        Page<SysLoginLog> page = new Page<>(current, size);
+    public Result<IPage<SysLoginLog>> list(SysLoginLogQueryDTO queryDTO) {
+        Page<SysLoginLog> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         SysLoginLog loginLog = new SysLoginLog();
-        loginLog.setUsername(username);
-        loginLog.setIpaddr(ipaddr);
-        loginLog.setStatus(status);
+        loginLog.setUsername(queryDTO.getUsername());
+        loginLog.setIpaddr(queryDTO.getIpaddr());
+        loginLog.setStatus(queryDTO.getStatus());
         return Result.success(sysLoginLogService.selectLoginLogList(page, loginLog));
     }
 

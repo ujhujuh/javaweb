@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.SysOperLogQueryDTO;
 import com.example.javaweb.entity.SysOperLog;
 import com.example.javaweb.service.SysOperLogService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -20,18 +21,13 @@ public class SysOperLogController {
     @ApiLog("分页查询操作日志")
     @RequiresPermissions("system:operlog:list")
     @GetMapping("/list")
-    public Result<IPage<SysOperLog>> list(@RequestParam(defaultValue = "1") Integer current,
-                                         @RequestParam(defaultValue = "10") Integer size,
-                                         @RequestParam(required = false) String title,
-                                         @RequestParam(required = false) String operName,
-                                         @RequestParam(required = false) String operIp,
-                                         @RequestParam(required = false) Integer status) {
-        Page<SysOperLog> page = new Page<>(current, size);
+    public Result<IPage<SysOperLog>> list(SysOperLogQueryDTO queryDTO) {
+        Page<SysOperLog> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         SysOperLog operLog = new SysOperLog();
-        operLog.setTitle(title);
-        operLog.setOperName(operName);
-        operLog.setOperIp(operIp);
-        operLog.setStatus(status);
+        operLog.setTitle(queryDTO.getTitle());
+        operLog.setOperName(queryDTO.getOperName());
+        operLog.setOperIp(queryDTO.getOperIp());
+        operLog.setStatus(queryDTO.getStatus());
         return Result.success(sysOperLogService.selectOperLogList(page, operLog));
     }
 

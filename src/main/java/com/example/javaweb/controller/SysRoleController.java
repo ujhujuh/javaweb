@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
 import com.example.javaweb.dto.RoleExcelDTO;
+import com.example.javaweb.dto.SysRoleQueryDTO;
 import com.example.javaweb.entity.SysRole;
 import com.example.javaweb.entity.SysUser;
 import com.example.javaweb.service.SysRoleService;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,16 +33,12 @@ public class SysRoleController {
     @ApiLog("分页查询角色")
     @RequiresPermissions("system:role:list")
     @GetMapping("/list")
-    public Result<IPage<SysRole>> list(@RequestParam(defaultValue = "1") Integer current,
-                                      @RequestParam(defaultValue = "10") Integer size,
-                                      @RequestParam(required = false) String roleName,
-                                      @RequestParam(required = false) String roleKey,
-                                      @RequestParam(required = false) String status) {
-        Page<SysRole> page = new Page<>(current, size);
+    public Result<IPage<SysRole>> list(SysRoleQueryDTO queryDTO) {
+        Page<SysRole> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         SysRole role = new SysRole();
-        role.setRoleName(roleName);
-        role.setRoleKey(roleKey);
-        role.setStatus(status);
+        role.setRoleName(queryDTO.getRoleName());
+        role.setRoleKey(queryDTO.getRoleKey());
+        role.setStatus(queryDTO.getStatus());
         return Result.success(sysRoleService.selectRoleList(page, role));
     }
 

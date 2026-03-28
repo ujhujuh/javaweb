@@ -3,9 +3,7 @@ package com.example.javaweb.dto;
 import lombok.Data;
 
 @Data
-public class SysConfigQueryDTO {
-    private Integer current = 1;
-    private Integer size = 10;
+public class SysConfigQueryDTO extends PageQueryDTO {
     private String configName;
     private String configKey;
     private String configType;

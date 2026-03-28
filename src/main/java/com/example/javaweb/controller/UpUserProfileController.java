@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.UpUserProfileQueryDTO;
+import com.example.javaweb.dto.UpUserProfileRangeQueryDTO;
 import com.example.javaweb.entity.UpUserProfile;
 import com.example.javaweb.service.UpUserProfileService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -24,12 +26,10 @@ public class UpUserProfileController {
     @ApiLog("分页查询用户画像")
     @RequiresPermissions("userprofile:list")
     @GetMapping("/list")
-    public Result<IPage<UpUserProfile>> list(@RequestParam(defaultValue = "1") Integer current,
-                                              @RequestParam(defaultValue = "10") Integer size,
-                                              Long userId) {
-        Page<UpUserProfile> page = new Page<>(current, size);
+    public Result<IPage<UpUserProfile>> list(UpUserProfileQueryDTO queryDTO) {
+        Page<UpUserProfile> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
         UpUserProfile profile = new UpUserProfile();
-        profile.setUserId(userId);
+        profile.setUserId(queryDTO.getUserId());
         return Result.success(upUserProfileService.selectList(page, profile));
     }
 
@@ -44,7 +44,7 @@ public class UpUserProfileController {
     @RequiresPermissions("userprofile:query")
     @GetMapping("/byDate")
     public Result<UpUserProfile> getByUserIdAndDate(Long userId,
-                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         return Result.success(upUserProfileService.selectByUserIdAndDate(userId, date));
     }
 
@@ -58,17 +58,19 @@ public class UpUserProfileController {
     @ApiLog("查询用户日期范围内的画像")
     @RequiresPermissions("userprofile:query")
     @GetMapping("/range")
-    public Result<List<UpUserProfile>> getByDateRange(Long userId,
-                                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-        return Result.success(upUserProfileService.selectByDateRange(userId, startDate, endDate));
+    public Result<List<UpUserProfile>> getByDateRange(UpUserProfileRangeQueryDTO queryDTO) {
+        return Result.success(upUserProfileService.selectByDateRange(
+                queryDTO.getUserId(),
+                queryDTO.getStartDate(),
+                queryDTO.getEndDate()
+        ));
     }
 
     @ApiLog("生成用户画像")
     @RequiresPermissions("userprofile:add")
     @PostMapping("/generate")
     public Result<Void> generate(@RequestParam Long userId,
-                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         upUserProfileService.generateUserProfile(userId, date);
         return Result.success();
     }
