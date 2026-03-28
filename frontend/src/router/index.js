@@ -74,6 +74,26 @@ const routes = [
         component: () => import('@/views/toolbox/UsSentiment.vue')
       },
       {
+        path: '/news/content',
+        name: 'NewsContent',
+        component: () => import('@/views/news/Content.vue')
+      },
+      {
+        path: '/news/category',
+        name: 'NewsCategory',
+        component: () => import('@/views/news/Category.vue')
+      },
+      {
+        path: '/news/comment',
+        name: 'NewsComment',
+        component: () => import('@/views/news/Comment.vue')
+      },
+      {
+        path: '/news/interaction',
+        name: 'NewsInteraction',
+        component: () => import('@/views/news/Interaction.vue')
+      },
+      {
         path: '/userprofile',
         name: 'UserProfile',
         component: () => import('@/views/userprofile/UserProfile.vue')

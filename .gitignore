@@ -45,4 +45,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 /frontend/node_modules/**
+/frontend/dist/**
+/news-frontend/node_modules/**
+/news-frontend/dist/**
 /需求文档/

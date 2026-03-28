@@ -29,6 +29,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             "/api/auth/unauthorized",
             "/api/auth/userInfo",
             "/api/system/notice/latest",
+            "/api/portal/news/home",
+            "/api/portal/news/categories",
+            "/api/portal/news/list",
+            "/api/portal/news/detail",
             "/auth/login",
             "/auth/register",
             "/auth/unauthorized",
@@ -53,6 +57,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
 
         String requestURI = req.getRequestURI();
+        if ("GET".equalsIgnoreCase(req.getMethod()) && requestURI.matches("^/api/portal/news/\\d+/comments$")) {
+            return true;
+        }
         for (String path : PATHS_TO_SKIP) {
             if (requestURI.equals(path) || requestURI.startsWith(path + "/") || requestURI.startsWith(path + ".") || (path.equals("/druid") && requestURI.startsWith("/druid"))) {
                 return true;

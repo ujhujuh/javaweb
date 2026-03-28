@@ -199,6 +199,98 @@ CREATE TABLE `sys_user_notice` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户公告关联表';
 
 -- =============================================
+-- 资讯分类表
+-- =============================================
+DROP TABLE IF EXISTS `up_news_category`;
+CREATE TABLE `up_news_category` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `category_name` VARCHAR(100) NOT NULL COMMENT '分类名称',
+    `parent_id` BIGINT(20) DEFAULT 0 COMMENT '父分类ID',
+    `sort_num` INT(11) DEFAULT 0 COMMENT '排序',
+    `status` CHAR(1) DEFAULT '0' COMMENT '状态（0正常 1禁用）',
+    `create_by` VARCHAR(64) DEFAULT NULL COMMENT '创建者',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by` VARCHAR(64) DEFAULT NULL COMMENT '更新者',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_news_category_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='资讯分类表';
+
+-- =============================================
+-- 资讯内容表
+-- =============================================
+DROP TABLE IF EXISTS `up_news`;
+CREATE TABLE `up_news` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `title` VARCHAR(200) NOT NULL COMMENT '标题',
+    `summary` VARCHAR(1000) DEFAULT NULL COMMENT '摘要',
+    `content` LONGTEXT COMMENT '正文',
+    `cover_image` VARCHAR(255) DEFAULT NULL COMMENT '封面图',
+    `tags` VARCHAR(255) DEFAULT NULL COMMENT '标签（逗号分隔）',
+    `category_id` BIGINT(20) DEFAULT NULL COMMENT '分类ID',
+    `visible_scope` CHAR(1) DEFAULT '0' COMMENT '可见范围（0公开 1登录可见）',
+    `is_top` CHAR(1) DEFAULT '0' COMMENT '置顶（0否 1是）',
+    `status` CHAR(1) DEFAULT '1' COMMENT '状态（0草稿 1发布 2下线）',
+    `view_count` INT(11) DEFAULT 0 COMMENT '阅读量',
+    `like_count` INT(11) DEFAULT 0 COMMENT '点赞量',
+    `favorite_count` INT(11) DEFAULT 0 COMMENT '收藏量',
+    `comment_count` INT(11) DEFAULT 0 COMMENT '评论量',
+    `publish_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+    `create_by` VARCHAR(64) DEFAULT NULL COMMENT '创建者',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by` VARCHAR(64) DEFAULT NULL COMMENT '更新者',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_news_category_id` (`category_id`),
+    KEY `idx_news_publish_time` (`publish_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='资讯内容表';
+
+-- =============================================
+-- 资讯点赞表
+-- =============================================
+DROP TABLE IF EXISTS `up_news_like`;
+CREATE TABLE `up_news_like` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
+    `news_id` BIGINT(20) NOT NULL COMMENT '资讯ID',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '点赞时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_news_like` (`user_id`, `news_id`),
+    KEY `idx_news_like_news` (`news_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='资讯点赞表';
+
+-- =============================================
+-- 资讯收藏表
+-- =============================================
+DROP TABLE IF EXISTS `up_news_favorite`;
+CREATE TABLE `up_news_favorite` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
+    `news_id` BIGINT(20) NOT NULL COMMENT '资讯ID',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_news_favorite` (`user_id`, `news_id`),
+    KEY `idx_news_favorite_news` (`news_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='资讯收藏表';
+
+-- =============================================
+-- 资讯评论表
+-- =============================================
+DROP TABLE IF EXISTS `up_news_comment`;
+CREATE TABLE `up_news_comment` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `news_id` BIGINT(20) NOT NULL COMMENT '资讯ID',
+    `user_id` BIGINT(20) NOT NULL COMMENT '评论用户ID',
+    `content` VARCHAR(1000) NOT NULL COMMENT '评论内容',
+    `status` CHAR(1) DEFAULT '0' COMMENT '状态（0正常 1删除）',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_news_comment_news` (`news_id`),
+    KEY `idx_news_comment_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='资讯评论表';
+
+-- =============================================
 -- 操作日志表
 -- =============================================
 DROP TABLE IF EXISTS `sys_oper_log`;
@@ -470,6 +562,23 @@ INSERT INTO `sys_notice` (`id`, `notice_title`, `notice_type`, `notice_content`,
 (3, '年度总结会议通知', '1', '<p>各位同事：</p><p>公司将于2024年12月31日下午14:00在第一会议室召开年度总结会议。</p><p>会议议程：</p><ul><li>年度工作总结</li><li>优秀员工表彰</li><li>下年度工作计划</li></ul><p>请各部门提前准备好相关材料，准时参会。</p>', '0', 'admin', '会议通知'),
 (4, '假期放假通知', '2', '<p>根据国家法定节假日安排，现将2025年春节放假安排通知如下：</p><p><strong>放假时间：</strong>2025年1月28日至2月3日，共7天。</p><p><strong>复工时间：</strong>2025年2月4日（星期二）。</p><p>请各部门提前做好工作安排，确保节前节后工作顺利衔接。</p><p>祝大家春节快乐，阖家幸福！</p>', '0', 'admin', '放假通知'),
 (5, '系统安全提醒', '1', '<p>为保障系统安全，请各位用户注意以下几点：</p><ul><li>定期修改密码，建议使用强密码</li><li>不要将账号密码告知他人</li><li>离开时请及时退出系统</li><li>发现异常情况及时联系管理员</li></ul><p>感谢您的配合！</p>', '0', 'admin', '安全提醒');
+
+-- =============================================
+-- 初始化数据 - 资讯分类
+-- =============================================
+INSERT INTO `up_news_category` (`id`, `category_name`, `parent_id`, `sort_num`, `status`, `create_by`) VALUES
+(1, '干货分享', 0, 1, '0', 'admin'),
+(2, '专题合集', 0, 2, '0', 'admin'),
+(3, '行业快讯', 0, 3, '0', 'admin'),
+(4, '市场观察', 0, 4, '0', 'admin');
+
+-- =============================================
+-- 初始化数据 - 资讯内容
+-- =============================================
+INSERT INTO `up_news` (`id`, `title`, `summary`, `content`, `cover_image`, `tags`, `category_id`, `visible_scope`, `is_top`, `status`, `view_count`, `like_count`, `favorite_count`, `comment_count`, `publish_time`, `create_by`) VALUES
+(1, '2026行业数字化趋势观察', '解读行业数字化转型中的关键策略与组织变化。', '<p>这是公开资讯正文示例，访客可查看全文。</p><p>内容包含趋势、案例与实践建议。</p>', 'https://picsum.photos/seed/news-1/1200/600', '数字化,行业', 4, '0', '1', '1', 128, 18, 11, 2, DATE_SUB(NOW(), INTERVAL 1 DAY), 'admin'),
+(2, '专题：增长模型拆解与落地', '登录后可查看完整章节和数据图表。', '<p>该内容为登录可见示例，包含深度图表和落地清单。</p><p>请登录后查看完整内容。</p>', 'https://picsum.photos/seed/news-2/1200/600', '增长,专题', 2, '1', '1', '1', 96, 14, 9, 1, DATE_SUB(NOW(), INTERVAL 2 DAY), 'admin'),
+(3, '每周快讯：重点资讯汇总', '汇总本周核心动态与要点。', '<p>每周快讯内容示例。</p>', 'https://picsum.photos/seed/news-3/1200/600', '快讯,周报', 3, '0', '0', '1', 73, 8, 6, 0, DATE_SUB(NOW(), INTERVAL 3 DAY), 'admin');
 
 -- 用户配置表
 CREATE TABLE IF NOT EXISTS `sys_user_config` (

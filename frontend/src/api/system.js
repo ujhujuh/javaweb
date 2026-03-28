@@ -693,3 +693,82 @@ export const fileApi = {
     })
   }
 }
+
+// 资讯管理API
+export const newsManageApi = {
+  list(params) {
+    return request({
+      url: '/portal/news/manage/list',
+      method: 'get',
+      params
+    })
+  },
+
+  publish(data) {
+    return request({
+      url: '/portal/news/publish',
+      method: 'post',
+      data
+    })
+  },
+
+  update(id, data) {
+    return request({
+      url: `/portal/news/manage/${id}`,
+      method: 'put',
+      data
+    })
+  },
+
+  delete(id) {
+    return request({
+      url: `/portal/news/manage/${id}`,
+      method: 'delete'
+    })
+  },
+
+  categories() {
+    return request({
+      url: '/portal/news/manage/categories',
+      method: 'get'
+    })
+  },
+
+  addCategory(data) {
+    return request({
+      url: '/portal/news/manage/categories',
+      method: 'post',
+      data
+    })
+  },
+
+  updateCategory(data) {
+    return request({
+      url: '/portal/news/manage/categories',
+      method: 'put',
+      data
+    })
+  },
+
+  deleteCategory(id) {
+    return request({
+      url: `/portal/news/manage/categories/${id}`,
+      method: 'delete'
+    })
+  },
+
+  comments(params) {
+    return request({
+      url: '/portal/news/manage/comments',
+      method: 'get',
+      params
+    })
+  },
+
+  deleteComment(id) {
+    return request({
+      url: `/portal/news/manage/comments/${id}`,
+      method: 'delete'
+    })
+  }
+}

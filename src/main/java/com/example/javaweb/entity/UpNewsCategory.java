@@ -1,6 +1,10 @@
 package com.example.javaweb.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -8,18 +12,18 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sys_notice")
-public class SysNotice implements Serializable {
+@TableName("up_news_category")
+public class UpNewsCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private String noticeTitle;
+    private String categoryName;
 
-    private String noticeType;
+    private Long parentId;
 
-    private String noticeContent;
+    private Integer sortNum;
 
     private String status;
 
@@ -36,6 +40,4 @@ public class SysNotice implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
-
-    private String remark;
 }

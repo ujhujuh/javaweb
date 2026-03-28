@@ -88,6 +88,11 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/api/auth/unauthorized", "anon");
         filterChainDefinitionMap.put("/api/auth/userInfo", "anon");
         filterChainDefinitionMap.put("/api/system/notice/latest", "anon");
+        filterChainDefinitionMap.put("/api/portal/news/home", "anon");
+        filterChainDefinitionMap.put("/api/portal/news/categories", "anon");
+        filterChainDefinitionMap.put("/api/portal/news/list", "anon");
+        filterChainDefinitionMap.put("/api/portal/news/detail/**", "anon");
+        filterChainDefinitionMap.put("/api/portal/news/*/comments", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/api/userprofile/software", "anon");
         filterChainDefinitionMap.put("/api/userprofile/file", "anon");
