@@ -3,16 +3,15 @@ package com.example.javaweb.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.javaweb.common.context.CurrentUserContext;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
 import com.example.javaweb.dto.SysNoticeQueryDTO;
 import com.example.javaweb.entity.SysNotice;
 import com.example.javaweb.entity.SysUser;
 import com.example.javaweb.entity.SysUserNotice;
-import com.example.javaweb.mapper.SysUserMapper;
 import com.example.javaweb.service.SysNoticeService;
 import com.example.javaweb.service.SysUserNoticeService;
-import com.example.javaweb.util.JwtUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +28,6 @@ public class SysNoticeController {
 
     @Autowired
     private SysUserNoticeService sysUserNoticeService;
-
-    @Autowired
-    private SysUserMapper sysUserMapper;
-
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @ApiLog("分页查询公告")
     @RequiresPermissions("system:notice:list")
@@ -58,26 +51,20 @@ public class SysNoticeController {
 
     @ApiLog("查询用户公告状态")
     @GetMapping("/user/status")
-    public Result<List<SysUserNotice>> userNoticeStatus(@RequestHeader("Authorization") String token) {
-        String username = jwtUtil.getUsernameFromToken(token);
-        SysUser user = sysUserMapper.selectOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-        );
+    public Result<List<SysUserNotice>> userNoticeStatus() {
+        SysUser user = CurrentUserContext.getUser();
         if (user == null) {
-            return Result.failed("用户不存在");
+            return Result.failed("未登录或登录已过期");
         }
         return Result.success(sysUserNoticeService.lambdaQuery().eq(SysUserNotice::getUserId, user.getId()).list());
     }
 
     @ApiLog("标记公告为已读")
     @PutMapping("/{id}/read")
-    public Result<Void> markAsRead(@PathVariable Long id, @RequestHeader("Authorization") String token) {
-        String username = jwtUtil.getUsernameFromToken(token);
-        SysUser user = sysUserMapper.selectOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-        );
+    public Result<Void> markAsRead(@PathVariable Long id) {
+        SysUser user = CurrentUserContext.getUser();
         if (user == null) {
-            return Result.failed("用户不存在");
+            return Result.failed("未登录或登录已过期");
         }
         sysUserNoticeService.markAsRead(user.getId(), id);
         return Result.success();

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.exception.BusinessException;
+import com.example.javaweb.common.context.CurrentUserContext;
 import com.example.javaweb.dto.NewsCommentCreateDTO;
 import com.example.javaweb.dto.NewsPublishDTO;
 import com.example.javaweb.dto.PageQueryDTO;
@@ -25,12 +26,10 @@ import com.example.javaweb.service.UpNewsCommentService;
 import com.example.javaweb.service.UpNewsFavoriteService;
 import com.example.javaweb.service.UpNewsLikeService;
 import com.example.javaweb.service.UpNewsService;
-import com.example.javaweb.util.JwtUtil;
 import com.example.javaweb.vo.news.NewsCardVO;
 import com.example.javaweb.vo.news.NewsCategoryVO;
 import com.example.javaweb.vo.news.NewsCommentVO;
 import com.example.javaweb.vo.news.NewsDetailVO;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,12 +68,9 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Autowired
     private SysUserMapper sysUserMapper;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
     @Override
-    public Map<String, Object> home(String token) {
-        Long userId = getUserIdFromToken(token);
+    public Map<String, Object> home() {
+        Long userId = CurrentUserContext.getUserId();
         Map<Long, String> categoryMap = getCategoryNameMap();
 
         List<UpNews> bannerList = upNewsService.lambdaQuery()
@@ -136,13 +132,13 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     }
 
     @Override
-    public IPage<NewsCardVO> list(PortalNewsListQueryDTO queryDTO, String token) {
+    public IPage<NewsCardVO> list(PortalNewsListQueryDTO queryDTO) {
         Integer current = queryDTO.getCurrent();
         Integer size = queryDTO.getSize();
         String keyword = queryDTO.getKeyword();
         Long categoryId = queryDTO.getCategoryId();
         String sort = queryDTO.getSort();
-        Long userId = getUserIdFromToken(token);
+        Long userId = CurrentUserContext.getUserId();
         Map<Long, String> categoryMap = getCategoryNameMap();
 
         LambdaQueryWrapper<UpNews> wrapper = new LambdaQueryWrapper<>();
@@ -179,13 +175,13 @@ public class PortalNewsServiceImpl implements PortalNewsService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public NewsDetailVO detail(Long id, String token) {
+    public NewsDetailVO detail(Long id) {
         UpNews news = upNewsService.lambdaQuery().eq(UpNews::getId, id).eq(UpNews::getStatus, "1").one();
         if (news == null) {
             throw new BusinessException("资讯不存在或已下线");
         }
 
-        Long userId = getUserIdFromToken(token);
+        Long userId = CurrentUserContext.getUserId();
         boolean locked = isLoginVisible(news.getVisibleScope()) && userId == null;
 
         Map<Long, String> categoryMap = getCategoryNameMap();
@@ -240,8 +236,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long publish(NewsPublishDTO dto) {
-        SysUser currentUser = requireLoginUser(null);
-
         UpNews news = new UpNews();
         news.setTitle(dto.getTitle().trim());
         news.setSummary(dto.getSummary());
@@ -257,7 +251,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
         news.setFavoriteCount(0);
         news.setCommentCount(0);
         news.setPublishTime(LocalDateTime.now());
-        news.setCreateBy(currentUser.getUsername());
+        news.setCreateBy(CurrentUserContext.getUsername());
         upNewsService.save(news);
 
         return news.getId();
@@ -265,7 +259,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
 
     @Override
     public IPage<UpNews> manageList(PortalNewsManageListQueryDTO queryDTO) {
-        requireLoginUser(null);
         Integer current = queryDTO.getCurrent();
         Integer size = queryDTO.getSize();
         String keyword = queryDTO.getKeyword();
@@ -289,7 +282,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateNews(Long id, NewsPublishDTO dto) {
-        requireLoginUser(null);
         UpNews existing = upNewsService.getById(id);
         if (existing == null) {
             throw new BusinessException("资讯不存在");
@@ -308,7 +300,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteNews(Long id) {
-        requireLoginUser(null);
         upNewsService.removeById(id);
         upNewsLikeService.lambdaUpdate().eq(UpNewsLike::getNewsId, id).remove();
         upNewsFavoriteService.lambdaUpdate().eq(UpNewsFavorite::getNewsId, id).remove();
@@ -317,7 +308,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
 
     @Override
     public List<UpNewsCategory> manageCategories() {
-        requireLoginUser(null);
         return upNewsCategoryService.lambdaQuery()
                 .orderByAsc(UpNewsCategory::getParentId)
                 .orderByAsc(UpNewsCategory::getSortNum)
@@ -327,7 +317,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCategory(UpNewsCategory category) {
-        requireLoginUser(null);
         category.setId(null);
         if (category.getParentId() == null) {
             category.setParentId(0L);
@@ -344,7 +333,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCategory(UpNewsCategory category) {
-        requireLoginUser(null);
         if (category.getId() == null) {
             throw new BusinessException("分类ID不能为空");
         }
@@ -354,7 +342,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteCategory(Long id) {
-        requireLoginUser(null);
         long newsCount = upNewsService.lambdaQuery().eq(UpNews::getCategoryId, id).count();
         if (newsCount > 0) {
             throw new BusinessException("该分类下存在资讯，无法删除");
@@ -364,7 +351,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
 
     @Override
     public IPage<Map<String, Object>> manageComments(PortalNewsManageCommentQueryDTO queryDTO) {
-        requireLoginUser(null);
         Integer current = queryDTO.getCurrent();
         Integer size = queryDTO.getSize();
         String keyword = queryDTO.getKeyword();
@@ -401,7 +387,6 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteComment(Long id) {
-        requireLoginUser(null);
         UpNewsComment comment = upNewsCommentService.getById(id);
         if (comment == null) {
             return;
@@ -416,7 +401,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void like(Long id) {
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         if (upNewsService.getById(id) == null) {
             throw new BusinessException("资讯不存在");
         }
@@ -438,7 +423,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void unlike(Long id) {
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         boolean removed = upNewsLikeService.lambdaUpdate()
                 .eq(UpNewsLike::getUserId, userId)
                 .eq(UpNewsLike::getNewsId, id)
@@ -452,7 +437,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void favorite(Long id) {
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         if (upNewsService.getById(id) == null) {
             throw new BusinessException("资讯不存在");
         }
@@ -474,7 +459,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void unfavorite(Long id) {
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         boolean removed = upNewsFavoriteService.lambdaUpdate()
                 .eq(UpNewsFavorite::getUserId, userId)
                 .eq(UpNewsFavorite::getNewsId, id)
@@ -522,7 +507,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addComment(Long id, NewsCommentCreateDTO dto) {
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         if (upNewsService.getById(id) == null) {
             throw new BusinessException("资讯不存在");
         }
@@ -543,7 +528,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     public IPage<NewsCardVO> myFavorites(PageQueryDTO queryDTO) {
         Integer current = queryDTO.getCurrent();
         Integer size = queryDTO.getSize();
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         Map<Long, String> categoryMap = getCategoryNameMap();
 
         IPage<UpNewsFavorite> favoritePage = upNewsFavoriteService.page(new Page<>(current, size),
@@ -576,7 +561,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     public IPage<NewsCardVO> myHistory(PageQueryDTO queryDTO) {
         Integer current = queryDTO.getCurrent();
         Integer size = queryDTO.getSize();
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         Map<Long, String> categoryMap = getCategoryNameMap();
 
         IPage<UpBrowserBehavior> historyPage = upBrowserBehaviorService.page(new Page<>(current, size),
@@ -610,7 +595,7 @@ public class PortalNewsServiceImpl implements PortalNewsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void clearHistory() {
-        Long userId = requireLoginUserId(null);
+        Long userId = CurrentUserContext.getUserId();
         upBrowserBehaviorService.lambdaUpdate()
                 .eq(UpBrowserBehavior::getUserId, userId)
                 .likeRight(UpBrowserBehavior::getUrl, "/news/detail/")
@@ -724,47 +709,4 @@ public class PortalNewsServiceImpl implements PortalNewsService {
         }
     }
 
-    private Long requireLoginUserId(String token) {
-        SysUser user = requireLoginUser(token);
-        return user.getId();
-    }
-
-    private SysUser requireLoginUser(String token) {
-        SysUser user = getCurrentUser();
-        if (user == null) {
-            user = getUserFromToken(token);
-        }
-        if (user == null) {
-            throw new IllegalArgumentException("未登录或登录已过期");
-        }
-        return user;
-    }
-
-    private Long getUserIdFromToken(String token) {
-        SysUser user = getUserFromToken(token);
-        return user == null ? null : user.getId();
-    }
-
-    private SysUser getUserFromToken(String token) {
-        if (token == null || token.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            String username = jwtUtil.getUsernameFromToken(token);
-            if (username == null || username.trim().isEmpty()) {
-                return null;
-            }
-            return sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private SysUser getCurrentUser() {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        if (principal instanceof SysUser) {
-            return (SysUser) principal;
-        }
-        return null;
-    }
 }

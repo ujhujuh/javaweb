@@ -498,4 +498,5 @@ mysql -u root -p < init.sql
 3. 严格遵循分层职责：Controller 层禁止编写业务逻辑，仅负责参数接收/校验、权限控制、调用 Service、返回统一响应；业务逻辑、事务处理与数据组装必须下沉到 Service 层。
 4. 所有分页查询接口必须统一使用分页查询对象封装 `current`、`size`（统一继承 `PageQueryDTO`），禁止在 Controller 方法中零散声明分页参数。
 5. Controller 接口入参超过 2 个时，必须封装为请求对象（QueryDTO/RequestDTO）进行接收，避免参数平铺。
-6. 接口的用户身份获取遵循项目统一方式：登录态接口优先通过 Shiro `SecurityUtils.getSubject().getPrincipal()` 获取当前用户；仅匿名可访问场景允许保留可选 token 解析作为补充。
+6. 接口用户身份获取必须统一走“token 拦截器 + 当前用户上下文（ThreadLocal）”，禁止在 Controller/Service 中自行解析 token。
+7. 必须提供统一 token 拦截器：请求进入时解析 `Authorization` 并写入当前用户上下文，请求完成后必须清理上下文，避免线程复用导致用户串号。

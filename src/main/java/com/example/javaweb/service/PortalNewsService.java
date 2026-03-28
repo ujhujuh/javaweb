@@ -19,13 +19,13 @@ import java.util.Map;
 
 public interface PortalNewsService {
 
-    Map<String, Object> home(String token);
+    Map<String, Object> home();
 
     List<NewsCategoryVO> categories();
 
-    IPage<NewsCardVO> list(PortalNewsListQueryDTO queryDTO, String token);
+    IPage<NewsCardVO> list(PortalNewsListQueryDTO queryDTO);
 
-    NewsDetailVO detail(Long id, String token);
+    NewsDetailVO detail(Long id);
 
     Long publish(NewsPublishDTO dto);
 

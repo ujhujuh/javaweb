@@ -1,6 +1,7 @@
 package com.example.javaweb.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.javaweb.common.context.CurrentUserContext;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
 import com.example.javaweb.dto.LoginDTO;
@@ -8,7 +9,6 @@ import com.example.javaweb.dto.RegisterDTO;
 import com.example.javaweb.entity.SysUser;
 import com.example.javaweb.mapper.SysUserMapper;
 import com.example.javaweb.service.AuthService;
-import com.example.javaweb.util.JwtUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -26,9 +26,6 @@ public class AuthController {
 
     @Autowired
     private SysUserMapper sysUserMapper;
-
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @ApiLog("用户登录")
     @PostMapping("/login")
@@ -60,17 +57,11 @@ public class AuthController {
 
     @ApiLog("获取当前用户信息")
     @GetMapping("/userInfo")
-    public Result<SysUser> getUserInfo(@RequestHeader("Authorization") String token) {
-        if (token == null || token.isEmpty()) {
-            return Result.failed(401, "未登录");
+    public Result<SysUser> getUserInfo() {
+        SysUser user = CurrentUserContext.getUser();
+        if (user == null) {
+            return Result.failed(401, "未登录或token已过期");
         }
-        String username = jwtUtil.getUsernameFromToken(token);
-        if (username == null) {
-            return Result.failed(401, "token无效");
-        }
-        SysUser user = sysUserMapper.selectOne(
-            new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-        );
         return Result.success(user);
     }
 

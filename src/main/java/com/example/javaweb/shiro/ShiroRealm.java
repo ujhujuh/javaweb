@@ -40,10 +40,21 @@ public class ShiroRealm extends AuthorizingRealm {
 
         List<SysRole> roles = sysUserMapper.selectRolesByUserId(user.getId());
         Set<String> roleKeys = new HashSet<>();
+        boolean isAdmin = "admin".equalsIgnoreCase(user.getUsername());
         for (SysRole role : roles) {
             roleKeys.add(role.getRoleKey());
+            if ("admin".equalsIgnoreCase(role.getRoleKey())) {
+                isAdmin = true;
+            }
         }
         info.setRoles(roleKeys);
+
+        if (isAdmin) {
+            // 超级管理员兜底权限，避免角色菜单关系异常导致误拦截
+            info.addStringPermission("*:*:*");
+            info.addStringPermission("*");
+            return info;
+        }
 
         List<SysMenu> menus = sysUserMapper.selectMenusByUserId(user.getId());
         Set<String> perms = new HashSet<>();

@@ -32,8 +32,8 @@ public class PortalNewsController {
 
     @ApiLog("资讯门户首页聚合")
     @GetMapping("/home")
-    public Result<Map<String, Object>> home(@RequestHeader(value = "Authorization", required = false) String token) {
-        return Result.success(portalNewsService.home(token));
+    public Result<Map<String, Object>> home() {
+        return Result.success(portalNewsService.home());
     }
 
     @ApiLog("资讯分类")
@@ -44,16 +44,14 @@ public class PortalNewsController {
 
     @ApiLog("资讯列表")
     @GetMapping("/list")
-    public Result<IPage<NewsCardVO>> list(PortalNewsListQueryDTO queryDTO,
-                                          @RequestHeader(value = "Authorization", required = false) String token) {
-        return Result.success(portalNewsService.list(queryDTO, token));
+    public Result<IPage<NewsCardVO>> list(PortalNewsListQueryDTO queryDTO) {
+        return Result.success(portalNewsService.list(queryDTO));
     }
 
     @ApiLog("资讯详情")
     @GetMapping("/detail/{id}")
-    public Result<NewsDetailVO> detail(@PathVariable Long id,
-                                       @RequestHeader(value = "Authorization", required = false) String token) {
-        return Result.success(portalNewsService.detail(id, token));
+    public Result<NewsDetailVO> detail(@PathVariable Long id) {
+        return Result.success(portalNewsService.detail(id));
     }
 
     @ApiLog("发布资讯")
