@@ -93,6 +93,9 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/api/portal/news/list", "anon");
         filterChainDefinitionMap.put("/api/portal/news/detail/**", "anon");
         filterChainDefinitionMap.put("/api/portal/news/*/comments", "anon");
+        filterChainDefinitionMap.put("/api/portal/material/categories", "anon");
+        filterChainDefinitionMap.put("/api/portal/material/list", "anon");
+        filterChainDefinitionMap.put("/api/portal/material/detail/**", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/api/userprofile/software", "anon");
         filterChainDefinitionMap.put("/api/userprofile/file", "anon");

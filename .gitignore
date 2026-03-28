@@ -49,3 +49,5 @@ bin/
 /news-frontend/node_modules/**
 /news-frontend/dist/**
 /需求文档/
+/material-frontend/dist/**
+/material-frontend/node_modules/**

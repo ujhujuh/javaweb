@@ -94,6 +94,21 @@ const routes = [
         component: () => import('@/views/news/Interaction.vue')
       },
       {
+        path: '/sale/material',
+        name: 'SaleMaterial',
+        component: () => import('@/views/sale/Material.vue')
+      },
+      {
+        path: '/sale/category',
+        name: 'SaleCategory',
+        component: () => import('@/views/sale/Category.vue')
+      },
+      {
+        path: '/sale/order',
+        name: 'SaleOrder',
+        component: () => import('@/views/sale/Order.vue')
+      },
+      {
         path: '/userprofile',
         name: 'UserProfile',
         component: () => import('@/views/userprofile/UserProfile.vue')

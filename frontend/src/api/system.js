@@ -772,3 +772,89 @@ export const newsManageApi = {
     })
   }
 }
+
+// 线上售卖管理API
+export const saleManageApi = {
+  listMaterials(params) {
+    return request({
+      url: '/portal/material/manage/list',
+      method: 'get',
+      params
+    })
+  },
+
+  createMaterial(data) {
+    return request({
+      url: '/portal/material/manage',
+      method: 'post',
+      data
+    })
+  },
+
+  updateMaterial(id, data) {
+    return request({
+      url: `/portal/material/manage/${id}`,
+      method: 'put',
+      data
+    })
+  },
+
+  deleteMaterial(id) {
+    return request({
+      url: `/portal/material/manage/${id}`,
+      method: 'delete'
+    })
+  },
+
+  listCategories() {
+    return request({
+      url: '/portal/material/manage/categories',
+      method: 'get'
+    })
+  },
+
+  createCategory(data) {
+    return request({
+      url: '/portal/material/manage/categories',
+      method: 'post',
+      data
+    })
+  },
+
+  updateCategory(data) {
+    return request({
+      url: '/portal/material/manage/categories',
+      method: 'put',
+      data
+    })
+  },
+
+  deleteCategory(id) {
+    return request({
+      url: `/portal/material/manage/categories/${id}`,
+      method: 'delete'
+    })
+  },
+
+  listOrders(params) {
+    return request({
+      url: '/portal/material/manage/orders',
+      method: 'get',
+      params
+    })
+  },
+
+  resendOrder(orderNo) {
+    return request({
+      url: `/portal/material/manage/orders/${orderNo}/resend`,
+      method: 'post'
+    })
+  },
+
+  closeOrder(orderNo) {
+    return request({
+      url: `/portal/material/manage/orders/${orderNo}/close`,
+      method: 'post'
+    })
+  }
+}
