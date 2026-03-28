@@ -2,6 +2,7 @@ package com.example.javaweb.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.javaweb.dto.UsSentimentCollectResultDTO;
 import com.example.javaweb.entity.UsSentiment;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface UsSentimentService extends IService<UsSentiment> {
 
     boolean deleteUsSentimentByIds(List<Long> ids);
 
-    boolean collectAndSaveSentimentData();
+    UsSentimentCollectResultDTO collectAndSaveSentimentData();
 
     boolean checkConditionsAndSendNotification(UsSentiment usSentiment);
 }

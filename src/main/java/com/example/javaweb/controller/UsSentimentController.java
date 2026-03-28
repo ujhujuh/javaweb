@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.dto.UsSentimentCollectResultDTO;
 import com.example.javaweb.dto.UsSentimentQueryDTO;
 import com.example.javaweb.entity.UsSentiment;
 import com.example.javaweb.service.UsSentimentService;
@@ -59,9 +60,14 @@ public class UsSentimentController {
     @ApiLog("手动收集美股情绪指标")
     @RequiresPermissions("toolbox:us-sentiment:collect")
     @PostMapping("/collect")
-    public Result<Void> collect() {
-        boolean success = usSentimentService.collectAndSaveSentimentData();
-        return success ? Result.success() : Result.failed("收集数据失败");
+    public Result<UsSentimentCollectResultDTO> collect() {
+        UsSentimentCollectResultDTO result = usSentimentService.collectAndSaveSentimentData();
+        if (result.isSuccess()) {
+            return Result.success(result.getMessage(), result);
+        }
+        Result<UsSentimentCollectResultDTO> failed = Result.failed(result.getMessage());
+        failed.setData(result);
+        return failed;
     }
 
     @ApiLog("删除美股情绪指标")

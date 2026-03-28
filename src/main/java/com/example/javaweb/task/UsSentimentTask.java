@@ -1,5 +1,6 @@
 package com.example.javaweb.task;
 
+import com.example.javaweb.dto.UsSentimentCollectResultDTO;
 import com.example.javaweb.service.UsSentimentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,19 @@ public class UsSentimentTask {
     public void collectUsSentimentData() {
         try {
             logger.info("开始执行美股情绪指标收集任务");
-            boolean success = usSentimentService.collectAndSaveSentimentData();
-            if (success) {
-                logger.info("美股情绪指标收集任务执行成功");
+            UsSentimentCollectResultDTO result = usSentimentService.collectAndSaveSentimentData();
+            if (result.isSuccess()) {
+                logger.info("美股情绪指标收集任务执行完成: successCount={}, failedCount={}, failedIndicators={}, message={}",
+                        result.getSuccessCount(),
+                        result.getFailedIndicators().size(),
+                        result.getFailedIndicators(),
+                        result.getMessage());
             } else {
-                logger.error("美股情绪指标收集任务执行失败");
+                logger.error("美股情绪指标收集任务执行失败: successCount={}, failedCount={}, failedIndicators={}, message={}",
+                        result.getSuccessCount(),
+                        result.getFailedIndicators().size(),
+                        result.getFailedIndicators(),
+                        result.getMessage());
             }
         } catch (Exception e) {
             logger.error("美股情绪指标收集任务执行异常", e);
