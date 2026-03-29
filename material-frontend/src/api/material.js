@@ -24,6 +24,10 @@ export function getMyOrders(params) {
   return request({ url: '/portal/material/orders/my', method: 'get', params })
 }
 
+export function getMyOrderDetail(orderNo) {
+  return request({ url: `/portal/material/orders/my/${orderNo}`, method: 'get' })
+}
+
 export function getMyPurchased(params) {
   return request({ url: '/portal/material/purchased', method: 'get', params })
 }

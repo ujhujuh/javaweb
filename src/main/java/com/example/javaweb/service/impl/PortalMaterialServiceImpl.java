@@ -28,6 +28,7 @@ import com.example.javaweb.vo.material.MaterialCategoryVO;
 import com.example.javaweb.vo.material.MaterialCreateOrderVO;
 import com.example.javaweb.vo.material.MaterialDetailVO;
 import com.example.javaweb.vo.material.MaterialOrderVO;
+import com.example.javaweb.vo.material.MaterialPayInitVO;
 import com.example.javaweb.vo.material.PurchasedMaterialVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,9 @@ public class PortalMaterialServiceImpl implements PortalMaterialService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private MaterialPaymentGatewayService materialPaymentGatewayService;
 
     @Override
     public List<MaterialCategoryVO> categories() {
@@ -220,7 +224,7 @@ public class PortalMaterialServiceImpl implements PortalMaterialService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payOrder(String orderNo, MaterialOrderPayDTO dto) {
+    public MaterialPayInitVO payOrder(String orderNo, MaterialOrderPayDTO dto) {
         Long userId = ensureLogin();
         closeExpiredPendingOrders(userId);
         UpMaterialOrder order = getOrderByOrderNo(orderNo);
@@ -228,13 +232,53 @@ public class PortalMaterialServiceImpl implements PortalMaterialService {
             throw new BusinessException("无权操作该订单");
         }
         if (ORDER_COMPLETED.equals(order.getStatus())) {
-            return;
+            MaterialPayInitVO vo = new MaterialPayInitVO();
+            vo.setOrderNo(order.getOrderNo());
+            vo.setPayType(order.getPayType());
+            return vo;
         }
-        if (!ORDER_PENDING.equals(order.getStatus()) && !ORDER_PAID.equals(order.getStatus())) {
+        if (!ORDER_PENDING.equals(order.getStatus())) {
             throw new BusinessException("当前订单状态不允许支付");
         }
         String payType = normalizePayType(dto.getPayType());
-        completeOrder(order, payType, "TRADE-" + System.currentTimeMillis());
+        order.setPayType(payType);
+        upMaterialOrderService.updateById(order);
+        return materialPaymentGatewayService.initiatePay(order, payType);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleAlipayNotify(Map<String, String> params) {
+        MaterialPaymentGatewayService.AlipayNotifyResult notifyResult = materialPaymentGatewayService.parseAlipayNotify(params);
+        if (!notifyResult.isSuccess()) {
+            return;
+        }
+        UpMaterialOrder order = getOrderByOrderNo(notifyResult.getOutTradeNo());
+        if (ORDER_COMPLETED.equals(order.getStatus())) {
+            return;
+        }
+        if (order.getPayAmount() != null && notifyResult.getTotalAmount() != null) {
+            BigDecimal callbackAmount = new BigDecimal(notifyResult.getTotalAmount());
+            if (order.getPayAmount().compareTo(callbackAmount) != 0) {
+                throw new BusinessException("支付宝回调金额不匹配");
+            }
+        }
+        markOrderPaidAndDelivered(order, PAY_ALIPAY, notifyResult.getTradeNo());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleWechatNotify(String timestamp, String nonce, String signature, String serial, String requestBody) {
+        MaterialPaymentGatewayService.WechatNotifyResult notifyResult =
+                materialPaymentGatewayService.parseWechatNotify(timestamp, nonce, signature, serial, requestBody);
+        if (!notifyResult.isSuccess()) {
+            return;
+        }
+        UpMaterialOrder order = getOrderByOrderNo(notifyResult.getOutTradeNo());
+        if (ORDER_COMPLETED.equals(order.getStatus())) {
+            return;
+        }
+        markOrderPaidAndDelivered(order, PAY_WECHAT, notifyResult.getTransactionId());
     }
 
     @Override
@@ -497,6 +541,10 @@ public class PortalMaterialServiceImpl implements PortalMaterialService {
     }
 
     private void completeOrder(UpMaterialOrder order, String payType, String tradeNo) {
+        markOrderPaidAndDelivered(order, payType, tradeNo);
+    }
+
+    private void markOrderPaidAndDelivered(UpMaterialOrder order, String payType, String tradeNo) {
         order.setPayType(payType);
         order.setPayTradeNo(tradeNo);
         order.setPayTime(LocalDateTime.now());

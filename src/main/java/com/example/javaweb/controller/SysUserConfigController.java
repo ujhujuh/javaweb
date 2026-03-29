@@ -1,9 +1,10 @@
 package com.example.javaweb.controller;
 
+import com.example.javaweb.common.context.CurrentUserContext;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
+import com.example.javaweb.entity.SysUser;
 import com.example.javaweb.service.SysUserConfigService;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +29,8 @@ public class SysUserConfigController {
     @RequiresAuthentication
     @GetMapping("/{configKey}")
     public Result<Map<String, String>> getUserConfig(@PathVariable String configKey) {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        if (principal instanceof com.example.javaweb.entity.SysUser) {
-            com.example.javaweb.entity.SysUser user = (com.example.javaweb.entity.SysUser) principal;
+        SysUser user = CurrentUserContext.getUser();
+        if (user != null) {
             String value = sysUserConfigService.getUserConfig(user.getId(), configKey);
             Map<String, String> result = new HashMap<>();
             result.put(configKey, value);
@@ -46,9 +46,8 @@ public class SysUserConfigController {
     @RequiresAuthentication
     @PostMapping
     public Result<Void> setUserConfig(@RequestBody Map<String, String> params) {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        if (principal instanceof com.example.javaweb.entity.SysUser) {
-            com.example.javaweb.entity.SysUser user = (com.example.javaweb.entity.SysUser) principal;
+        SysUser user = CurrentUserContext.getUser();
+        if (user != null) {
             String configKey = params.get("configKey");
             String configValue = params.get("configValue");
             sysUserConfigService.setUserConfig(user.getId(), configKey, configValue);
@@ -64,9 +63,8 @@ public class SysUserConfigController {
     @RequiresAuthentication
     @DeleteMapping("/{configKey}")
     public Result<Void> deleteUserConfig(@PathVariable String configKey) {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        if (principal instanceof com.example.javaweb.entity.SysUser) {
-            com.example.javaweb.entity.SysUser user = (com.example.javaweb.entity.SysUser) principal;
+        SysUser user = CurrentUserContext.getUser();
+        if (user != null) {
             sysUserConfigService.deleteUserConfig(user.getId(), configKey);
             return Result.success();
         }

@@ -17,6 +17,7 @@ import com.example.javaweb.vo.material.MaterialCategoryVO;
 import com.example.javaweb.vo.material.MaterialCreateOrderVO;
 import com.example.javaweb.vo.material.MaterialDetailVO;
 import com.example.javaweb.vo.material.MaterialOrderVO;
+import com.example.javaweb.vo.material.MaterialPayInitVO;
 import com.example.javaweb.vo.material.PurchasedMaterialVO;
 
 import java.util.List;
@@ -31,7 +32,11 @@ public interface PortalMaterialService {
 
     MaterialCreateOrderVO createOrder(MaterialOrderCreateDTO dto);
 
-    void payOrder(String orderNo, MaterialOrderPayDTO dto);
+    MaterialPayInitVO payOrder(String orderNo, MaterialOrderPayDTO dto);
+
+    void handleAlipayNotify(java.util.Map<String, String> params);
+
+    void handleWechatNotify(String timestamp, String nonce, String signature, String serial, String requestBody);
 
     IPage<MaterialOrderVO> myOrders(MaterialOrderQueryDTO queryDTO);
 

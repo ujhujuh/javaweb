@@ -20,12 +20,16 @@ import com.example.javaweb.vo.material.MaterialCategoryVO;
 import com.example.javaweb.vo.material.MaterialCreateOrderVO;
 import com.example.javaweb.vo.material.MaterialDetailVO;
 import com.example.javaweb.vo.material.MaterialOrderVO;
+import com.example.javaweb.vo.material.MaterialPayInitVO;
 import com.example.javaweb.vo.material.PurchasedMaterialVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/portal/material")
@@ -60,10 +64,30 @@ public class PortalMaterialController {
 
     @ApiLog("支付资料订单")
     @PostMapping("/orders/{orderNo}/pay")
-    public Result<Void> payOrder(@PathVariable String orderNo,
-                                 @Validated @RequestBody MaterialOrderPayDTO dto) {
-        portalMaterialService.payOrder(orderNo, dto);
-        return Result.success();
+    public Result<MaterialPayInitVO> payOrder(@PathVariable String orderNo,
+                                              @Validated @RequestBody MaterialOrderPayDTO dto) {
+        return Result.success(portalMaterialService.payOrder(orderNo, dto));
+    }
+
+    @PostMapping("/pay/notify/alipay")
+    public String alipayNotify(HttpServletRequest request) {
+        Map<String, String> params = request.getParameterMap().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue() != null && entry.getValue().length > 0 ? entry.getValue()[0] : ""
+                ));
+        portalMaterialService.handleAlipayNotify(params);
+        return "success";
+    }
+
+    @PostMapping("/pay/notify/wechat")
+    public String wechatNotify(@RequestHeader("Wechatpay-Timestamp") String timestamp,
+                               @RequestHeader("Wechatpay-Nonce") String nonce,
+                               @RequestHeader("Wechatpay-Signature") String signature,
+                               @RequestHeader("Wechatpay-Serial") String serial,
+                               @RequestBody String requestBody) {
+        portalMaterialService.handleWechatNotify(timestamp, nonce, signature, serial, requestBody);
+        return "{\"code\":\"SUCCESS\",\"message\":\"成功\"}";
     }
 
     @ApiLog("我的资料订单")

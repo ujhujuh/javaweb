@@ -1,12 +1,12 @@
 package com.example.javaweb.controller;
 
+import com.example.javaweb.common.context.CurrentUserContext;
 import com.example.javaweb.common.log.ApiLog;
 import com.example.javaweb.common.result.Result;
 import com.example.javaweb.entity.SysMenu;
+import com.example.javaweb.entity.SysUser;
 import com.example.javaweb.service.SysMenuService;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,15 +22,11 @@ public class SysMenuController {
     @ApiLog("查询当前用户菜单")
     @GetMapping("/user")
     public Result<List<SysMenu>> userMenus() {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
-            Object principal = subject.getPrincipal();
-            if (principal instanceof com.example.javaweb.entity.SysUser) {
-                com.example.javaweb.entity.SysUser user = (com.example.javaweb.entity.SysUser) principal;
-                List<SysMenu> menus = sysMenuService.selectMenusByUserId(user.getId());
-                List<SysMenu> menuTree = sysMenuService.buildMenuTree(menus);
-                return Result.success(menuTree);
-            }
+        SysUser user = CurrentUserContext.getUser();
+        if (user != null) {
+            List<SysMenu> menus = sysMenuService.selectMenusByUserId(user.getId());
+            List<SysMenu> menuTree = sysMenuService.buildMenuTree(menus);
+            return Result.success(menuTree);
         }
         return Result.success(null);
     }
@@ -97,14 +93,10 @@ public class SysMenuController {
     @ApiLog("刷新菜单缓存")
     @PostMapping("/refresh")
     public Result<Void> refreshCache() {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
-            Object principal = subject.getPrincipal();
-            if (principal instanceof com.example.javaweb.entity.SysUser) {
-                com.example.javaweb.entity.SysUser user = (com.example.javaweb.entity.SysUser) principal;
-                sysMenuService.refreshUserMenuCache(user.getId());
-                return Result.success();
-            }
+        SysUser user = CurrentUserContext.getUser();
+        if (user != null) {
+            sysMenuService.refreshUserMenuCache(user.getId());
+            return Result.success();
         }
         return Result.success();
     }
