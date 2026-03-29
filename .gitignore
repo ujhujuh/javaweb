@@ -44,10 +44,14 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-/frontend/node_modules/**
-/frontend/dist/**
-/news-frontend/node_modules/**
-/news-frontend/dist/**
+
+### Frontend Dependencies & Build Outputs ###
+/frontend/node_modules/
+/frontend/dist/
+/news-frontend/node_modules/
+/news-frontend/dist/
+/material-frontend/node_modules/
+/material-frontend/dist/
+
+### Other ###
 /需求文档/
-/material-frontend/dist/**
-/material-frontend/node_modules/**
