@@ -45,9 +45,20 @@ const coverUrl = computed(() => toFileUrl(props.item.coverImage) || fallback)
 .lock {
   margin-top: 8px;
   font-size: 12px;
-  color: #b45309;
-  background: #fffbeb;
+  font-weight: 500;
+  color: var(--brand-dark);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(20, 184, 166, 0.08) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.2);
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+}
+
+.lock:hover {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(20, 184, 166, 0.12) 100%);
+  border-color: rgba(13, 148, 136, 0.3);
 }
 </style>

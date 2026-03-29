@@ -1,9 +1,21 @@
 :root {
-  --bg: #f4f6fb;
-  --text: #1f2a37;
-  --muted: #6b7280;
-  --brand: #0f766e;
-  --brand-soft: #14b8a6;
+  --bg: #f8fafc;
+  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0fdfa 50%, #f5f3ff 100%);
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --muted: #94a3b8;
+  --brand: #0d9488;
+  --brand-light: #14b8a6;
+  --brand-dark: #0f766e;
+  --brand-gradient: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.8);
 }
 
 * {
@@ -12,51 +24,345 @@
 
 body {
   margin: 0;
-  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "PingFang SC", "Microsoft YaHei", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top left, #d9f6f2 0, transparent 40%), var(--bg);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  min-height: 100vh;
+  line-height: 1.6;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--brand);
 }
 
 .page {
-  max-width: 1180px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 16px 40px;
+  padding: 32px 80px 64px;
 }
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .news-card {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
   overflow: hidden;
-  transition: transform .2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.news-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .news-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-8px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.news-card:hover::before {
+  opacity: 1;
 }
 
 .news-card .cover {
   width: 100%;
-  height: 140px;
+  height: 160px;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.news-card:hover .cover {
+  transform: scale(1.05);
 }
 
 .news-card .content {
-  padding: 14px;
+  padding: 20px;
 }
 
 .meta {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-light);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .page {
+    padding: 20px 24px 40px;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  :deep(.el-card__header) {
+    padding: 16px 20px;
+  }
+
+  :deep(.el-card__body) {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .page {
+    padding: 28px 56px 56px;
+  }
+
+  :deep(.el-card__header) {
+    padding: 18px 24px;
+  }
+
+  :deep(.el-card__body) {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .page {
+    padding: 32px 72px 64px;
+  }
+}
+
+@media (min-width: 1401px) {
+  .page {
+    padding: 40px 96px 80px;
+  }
+}
+
+/* Element Plus 组件全局样式优化 */
+:deep(.el-card) {
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-card:hover) {
+  box-shadow: var(--card-shadow-hover);
+}
+
+:deep(.el-card__header) {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(20, 184, 166, 0.03) 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  padding: 20px 28px;
+}
+
+:deep(.el-card__body) {
+  padding: 28px;
+}
+
+:deep(.el-input__wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-input__wrapper:hover),
+:deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+:deep(.el-select__wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-select__wrapper:hover),
+:deep(.el-select__wrapper.is-focus) {
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+:deep(.el-empty) {
+  padding: 60px 20px;
+}
+
+:deep(.el-empty__description) {
+  color: var(--text-secondary);
+}
+
+:deep(.el-alert) {
+  border-radius: 12px;
+  border: none;
+}
+
+:deep(.el-alert--warning) {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.08) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+:deep(.el-divider) {
+  border-color: rgba(226, 232, 240, 0.8);
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 600;
+  color: var(--text);
+}
+
+:deep(.el-radio__input.is-checked .el-radio__inner) {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 1px var(--brand);
+}
+
+:deep(.el-radio__inner) {
+  border-radius: 50%;
+  border: 2px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-radio__inner:hover) {
+  border-color: rgba(13, 148, 136, 0.4);
+}
+
+:deep(.el-radio__input.is-checked .el-radio__inner:hover) {
+  border-color: var(--brand);
+}
+
+:deep(.el-radio__input.is-checked + .el-radio__label) {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+:deep(.el-radio__label) {
+  color: var(--text);
+  transition: color 0.3s ease;
+}
+
+:deep(.el-radio:hover .el-radio__label) {
+  color: var(--brand);
+}
+
+:deep(.el-textarea__inner) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-textarea__inner:hover),
+:deep(.el-textarea__inner:focus) {
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+/* Switch 组件颜色优化 */
+:deep(.el-switch.is-checked .el-switch__core) {
+  background: var(--brand-gradient) !important;
+  border-color: var(--brand) !important;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+:deep(.el-switch__core) {
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+:deep(.el-switch__core:hover) {
+  border-color: rgba(13, 148, 136, 0.4);
+}
+
+:deep(.el-switch__core:after) {
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-switch.is-checked .el-switch__core:after) {
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.4);
+}
+
+:deep(.el-switch__label) {
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.3s ease;
+}
+
+:deep(.el-switch__label.is-active) {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+:deep(.el-switch.is-checked .el-switch__label--right) {
+  color: var(--brand);
+}
+
+:deep(.el-switch:not(.is-checked) .el-switch__label--left) {
+  color: var(--brand);
 }

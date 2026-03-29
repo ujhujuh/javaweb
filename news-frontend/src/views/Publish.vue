@@ -21,7 +21,10 @@
             accept="image/*"
           >
             <img v-if="form.coverImage" :src="form.coverImage" class="cover-preview" />
-            <el-button v-else type="primary" plain>上传封面图</el-button>
+            <el-button v-else class="upload-btn">
+              <span class="btn-icon">📷</span>
+              上传封面图
+            </el-button>
           </el-upload>
           <el-input v-model="form.coverImage" placeholder="或手动输入图片URL" style="margin-top: 8px;" />
         </el-form-item>
@@ -68,7 +71,10 @@
           </div>
         </el-form-item>
 
-        <el-button type="primary" @click="submit">提交</el-button>
+        <el-button class="submit-btn" @click="submit">
+          <span class="btn-icon">📤</span>
+          提交发布
+        </el-button>
       </el-form>
     </el-card>
   </div>
@@ -81,10 +87,21 @@ import { useRouter } from 'vue-router'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getCategories, publishNews, uploadImage } from '@/api/news'
 import { toFileUrl } from '@/utils/file-url'
+import { useUserStore } from '@/store/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 const categories = ref([])
 const editorRef = shallowRef()
+
+onMounted(() => {
+  if (!userStore.hasPermission('news:content:list')) {
+    ElMessage.error('您没有权限访问该页面')
+    router.push('/')
+    return
+  }
+  loadCategories()
+})
 
 const form = reactive({
   title: '',
@@ -161,8 +178,6 @@ const submit = async () => {
   router.push(`/detail/${res.data}`)
 }
 
-onMounted(loadCategories)
-
 onBeforeUnmount(() => {
   const editor = editorRef.value
   if (editor) {
@@ -178,6 +193,50 @@ onBeforeUnmount(() => {
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid #dcdfe6;
+}
+
+.upload-btn {
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  background: rgba(13, 148, 136, 0.05);
+  color: var(--brand);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.1);
+}
+
+.upload-btn:hover {
+  background: rgba(13, 148, 136, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+.submit-btn {
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-weight: 700;
+  font-size: 16px;
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+  transform: translateY(-2px);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  margin-right: 6px;
+  font-size: 16px;
 }
 </style>
 

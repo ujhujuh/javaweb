@@ -21,15 +21,31 @@
 
       <div class="article" v-html="detail.content"></div>
 
-      <div style="margin-top: 20px; display: flex; gap: 10px">
-        <el-button type="success" plain @click="toggleLike" :disabled="!userStore.isLogin()">
+      <div class="action-buttons">
+        <el-button
+          :class="['action-btn', 'like-btn', { 'is-active': detail.liked }]"
+          @click="toggleLike"
+          :disabled="!userStore.isLogin()"
+        >
+          <span class="btn-icon">{{ detail.liked ? '💚' : '🤍' }}</span>
           {{ detail.liked ? '取消点赞' : '点赞' }}（{{ detail.likeCount || 0 }}）
         </el-button>
-        <el-button type="primary" plain @click="toggleFavorite" :disabled="!userStore.isLogin()">
+        <el-button
+          :class="['action-btn', 'favorite-btn', { 'is-active': detail.favorited }]"
+          @click="toggleFavorite"
+          :disabled="!userStore.isLogin()"
+        >
+          <span class="btn-icon">{{ detail.favorited ? '⭐' : '☆' }}</span>
           {{ detail.favorited ? '取消收藏' : '收藏' }}（{{ detail.favoriteCount || 0 }}）
         </el-button>
-        <el-button @click="toList">返回列表</el-button>
-        <el-button v-if="detail.locked" type="success" @click="toLogin">登录解锁</el-button>
+        <el-button class="action-btn secondary-btn" @click="toList">
+          <span class="btn-icon">📋</span>
+          返回列表
+        </el-button>
+        <el-button v-if="detail.locked" class="action-btn unlock-btn" @click="toLogin">
+          <span class="btn-icon">🔓</span>
+          登录解锁
+        </el-button>
       </div>
 
       <el-divider />
@@ -45,7 +61,10 @@
         />
       </div>
       <div style="margin-bottom: 16px">
-        <el-button type="primary" @click="submitComment" :disabled="!userStore.isLogin()">发表评论</el-button>
+        <el-button class="action-btn submit-btn" @click="submitComment" :disabled="!userStore.isLogin()">
+          <span class="btn-icon">💬</span>
+          发表评论
+        </el-button>
       </div>
 
       <el-empty v-if="!comments.length" description="暂无评论" />
@@ -163,5 +182,107 @@ onMounted(load)
 
 :deep(.article img) {
   max-width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.action-btn {
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  background: rgba(13, 148, 136, 0.05);
+  color: var(--brand);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.1);
+}
+
+.action-btn:hover:not(:disabled) {
+  background: rgba(13, 148, 136, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-btn.is-active {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.action-btn.is-active:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+}
+
+.like-btn.is-active {
+  background: var(--success-gradient);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.like-btn.is-active:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.favorite-btn.is-active {
+  background: var(--warning-gradient);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.favorite-btn.is-active:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.secondary-btn {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.05);
+  color: #6366f1;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.12);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.unlock-btn {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.unlock-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+}
+
+.submit-btn {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.submit-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  margin-right: 6px;
+  font-size: 16px;
 }
 </style>
