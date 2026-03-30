@@ -3,47 +3,47 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>登录日志</span>
-          <el-button type="danger" @click="handleClean">清空</el-button>
+          <span>{{ $t('system.loginLog') }}</span>
+          <el-button type="danger" @click="handleClean">{{ $t('log.clean') }}</el-button>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="登录地址">
-          <el-input v-model="queryForm.ipaddr" placeholder="请输入登录地址" clearable style="width: 150px" />
+        <el-form-item :label="$t('log.loginIp')" :label-width="isEnglish ? '120px' : 'auto'">
+          <el-input v-model="queryForm.ipaddr" :placeholder="$t('log.loginIp')" clearable style="width: 150px" />
         </el-form-item>
-        <el-form-item label="用户名称">
-          <el-input v-model="queryForm.username" placeholder="请输入用户名称" clearable style="width: 150px" />
+        <el-form-item :label="$t('log.operName')" :label-width="isEnglish ? '120px' : 'auto'">
+          <el-input v-model="queryForm.username" :placeholder="$t('log.operName')" clearable style="width: 150px" />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="成功" value="0" />
-            <el-option label="失败" value="1" />
+        <el-form-item :label="$t('log.status')" :label-width="isEnglish ? '80px' : 'auto'">
+          <el-select v-model="queryForm.status" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('log.statusSuccess')" value="0" />
+            <el-option :label="$t('log.statusFail')" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="username" label="用户名称" width="120" />
-        <el-table-column prop="ipaddr" label="登录地址" width="130" />
-        <el-table-column prop="loginLocation" label="登录地点" width="150" />
-        <el-table-column prop="browser" label="浏览器" width="120" />
-        <el-table-column prop="os" label="操作系统" width="120" />
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="username" :label="$t('log.operName')" width="120" />
+        <el-table-column prop="ipaddr" :label="$t('log.loginIp')" width="130" />
+        <el-table-column prop="loginLocation" :label="$t('log.loginLocation')" width="150" />
+        <el-table-column prop="browser" :label="$t('log.browserType')" width="120" />
+        <el-table-column prop="os" :label="$t('log.osType')" width="120" />
+        <el-table-column prop="status" :label="$t('log.status')" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
-              {{ row.status === '0' ? '成功' : '失败' }}
+              {{ row.status === '0' ? $t('log.statusSuccess') : $t('log.statusFail') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="msg" label="提示消息" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="loginTime" label="访问时间" width="180" />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column prop="msg" :label="$t('log.msg')" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="loginTime" :label="$t('log.loginTime')" width="180" />
+        <el-table-column :label="$t('common.operation')" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleView(row)">查看</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button size="small" @click="handleView(row)">{{ $t('common.view') }}</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -60,29 +60,33 @@
     </el-card>
 
     <!-- 查看对话框 -->
-    <el-dialog v-model="viewVisible" title="登录日志详情" width="700px">
+    <el-dialog v-model="viewVisible" :title="$t('log.loginLogDetail')" width="700px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="用户名称">{{ viewData.username }}</el-descriptions-item>
-        <el-descriptions-item label="登录状态">
+        <el-descriptions-item :label="$t('log.username')">{{ viewData.username }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.loginStatus')">
           <el-tag :type="viewData.status === '0' ? 'success' : 'danger'">
-            {{ viewData.status === '0' ? '成功' : '失败' }}
+            {{ viewData.status === '0' ? $t('log.statusSuccess') : $t('log.statusFail') }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="登录地址">{{ viewData.ipaddr }}</el-descriptions-item>
-        <el-descriptions-item label="登录地点">{{ viewData.loginLocation }}</el-descriptions-item>
-        <el-descriptions-item label="浏览器">{{ viewData.browser }}</el-descriptions-item>
-        <el-descriptions-item label="操作系统">{{ viewData.os }}</el-descriptions-item>
-        <el-descriptions-item label="提示消息" :span="2">{{ viewData.msg }}</el-descriptions-item>
-        <el-descriptions-item label="访问时间" :span="2">{{ viewData.loginTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.loginAddress')">{{ viewData.ipaddr }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.loginLocation')">{{ viewData.loginLocation }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.browser')">{{ viewData.browser }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.os')">{{ viewData.os }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.msg')" :span="2">{{ viewData.msg }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('log.accessTime')" :span="2">{{ viewData.loginTime }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { loginLogApi } from '@/api/system'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const queryForm = reactive({
   ipaddr: '',

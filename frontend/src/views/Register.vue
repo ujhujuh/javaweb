@@ -3,36 +3,36 @@
     <el-card class="register-card">
       <template #header>
         <div class="card-header">
-          <span>用户注册</span>
+          <span>{{ $t('auth.registerTitle') }}</span>
         </div>
       </template>
       <el-form ref="registerFormRef" :model="registerForm" :rules="rules" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="registerForm.username" placeholder="请输入用户名" />
+        <el-form-item :label="$t('auth.username')" prop="username">
+          <el-input v-model="registerForm.username" :placeholder="$t('auth.username')" />
         </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="registerForm.nickname" placeholder="请输入昵称" />
+        <el-form-item :label="$t('user.nickname')" prop="nickname">
+          <el-input v-model="registerForm.nickname" :placeholder="$t('user.nickname')" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="registerForm.email" placeholder="请输入邮箱" />
+        <el-form-item :label="$t('user.email')" prop="email">
+          <el-input v-model="registerForm.email" :placeholder="$t('user.email')" />
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="registerForm.phone" placeholder="请输入手机号" />
+        <el-form-item :label="$t('user.phone')" prop="phone">
+          <el-input v-model="registerForm.phone" :placeholder="$t('user.phone')" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="registerForm.password" type="password" placeholder="请输入密码" />
+        <el-form-item :label="$t('auth.password')" prop="password">
+          <el-input v-model="registerForm.password" type="password" :placeholder="$t('auth.password')" />
         </el-form-item>
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input v-model="registerForm.confirmPassword" type="password" placeholder="请确认密码" />
+        <el-form-item :label="$t('auth.confirmPassword')" prop="confirmPassword">
+          <el-input v-model="registerForm.confirmPassword" type="password" :placeholder="$t('auth.confirmPassword')" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleRegister" :loading="loading" style="width: 100%">
-            注册
+            {{ $t('auth.register') }}
           </el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="text" @click="goToLogin" style="width: 100%">
-            已有账号？去登录
+            {{ $t('auth.hasAccount') }}{{ $t('auth.goToLogin') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -45,8 +45,10 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { register } from '@/api/auth'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const registerFormRef = ref()
 const loading = ref(false)
@@ -62,26 +64,26 @@ const registerForm = reactive({
 
 const validateConfirmPassword = (rule, value, callback) => {
   if (value !== registerForm.password) {
-    callback(new Error('两次输入的密码不一致'))
+    callback(new Error(t('validation.passwordMismatch')))
   } else {
     callback()
   }
 }
 
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+  username: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
+  nickname: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+    { required: true, message: t('validation.required'), trigger: 'blur' },
+    { type: 'email', message: t('validation.email'), trigger: 'blur' }
   ],
-  phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+  phone: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    { required: true, message: t('validation.required'), trigger: 'blur' },
+    { min: 6, message: t('validation.minLength', ['6']), trigger: 'blur' }
   ],
   confirmPassword: [
-    { required: true, message: '请确认密码', trigger: 'blur' },
+    { required: true, message: t('validation.required'), trigger: 'blur' },
     { validator: validateConfirmPassword, trigger: 'blur' }
   ]
 }
@@ -91,10 +93,10 @@ const handleRegister = async () => {
   loading.value = true
   try {
     await register(registerForm)
-    ElMessage.success('注册成功')
+    ElMessage.success(t('auth.registerSuccess'))
     router.push('/login')
   } catch (error) {
-    ElMessage.error(error.message || '注册失败')
+    ElMessage.error(error.message || t('auth.registerFailed'))
   } finally {
     loading.value = false
   }

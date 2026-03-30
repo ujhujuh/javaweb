@@ -3,59 +3,59 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>通知公告</span>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
+          <span>{{ $t('system.noticeManagement') }}</span>
+          <el-button type="primary" @click="handleAdd">{{ $t('common.add') }}</el-button>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="公告标题">
-          <el-input v-model="queryForm.noticeTitle" placeholder="请输入公告标题" clearable style="width: 200px" />
+        <el-form-item :label="$t('notice.noticeTitle')" :label-width="isEnglish ? '110px' : 'auto'">
+          <el-input v-model="queryForm.noticeTitle" :placeholder="$t('common.query')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="公告类型">
-          <el-select v-model="queryForm.noticeType" placeholder="请选择公告类型" clearable style="width: 150px">
-            <el-option label="通知" value="1" />
-            <el-option label="公告" value="2" />
+        <el-form-item :label="$t('notice.noticeType')" :label-width="isEnglish ? '120px' : 'auto'">
+          <el-select v-model="queryForm.noticeType" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('notice.noticeTypeNotice')" value="1" />
+            <el-option :label="$t('notice.noticeTypeAnnouncement')" value="2" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="正常" value="0" />
-            <el-option label="关闭" value="1" />
+        <el-form-item :label="$t('user.status')" :label-width="isEnglish ? '80px' : 'auto'">
+          <el-select v-model="queryForm.status" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('user.statusNormal')" value="0" />
+            <el-option :label="$t('user.statusDisabled')" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="noticeTitle" label="公告标题" min-width="200" />
-        <el-table-column prop="noticeType" label="公告类型" width="100">
+        <el-table-column prop="noticeTitle" :label="$t('notice.noticeTitle')" min-width="200" />
+        <el-table-column prop="noticeType" :label="$t('notice.noticeType')" width="100">
           <template #default="{ row }">
-            <el-tag v-if="row.noticeType === '1'" type="primary">通知</el-tag>
-            <el-tag v-else-if="row.noticeType === '2'" type="success">公告</el-tag>
+            <el-tag v-if="row.noticeType === '1'" type="primary">{{ $t('notice.noticeTypeNotice') }}</el-tag>
+            <el-tag v-else-if="row.noticeType === '2'" type="success">{{ $t('notice.noticeTypeAnnouncement') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="status" :label="$t('notice.status')" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
-              {{ row.status === '0' ? '正常' : '关闭' }}
+              {{ row.status === '0' ? $t('notice.normal') : $t('notice.closed') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createBy" label="创建者" width="120" />
-        <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column prop="createBy" :label="$t('notice.creator')" width="120" />
+        <el-table-column prop="createTime" :label="$t('notice.createTime')" width="180" />
+        <el-table-column :label="$t('common.operation')" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleView(row)">查看</el-button>
+            <el-button size="small" @click="handleView(row)">{{ $t('common.view') }}</el-button>
             <el-dropdown @command="(command) => handleCommandAction(command, row)">
               <el-button size="small" type="primary" style="margin-left: 8px;">
-                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{ $t('common.more') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                  <el-dropdown-item command="edit">{{ $t('common.edit') }}</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">{{ $t('common.delete') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -76,23 +76,23 @@
 
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
+      <el-form :model="form" :rules="rules" ref="formRef" :label-width="$t('common.labelWidth')">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="公告标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入公告标题" />
+            <el-form-item :label="$t('notice.noticeTitle')" prop="noticeTitle">
+              <el-input v-model="form.noticeTitle" :placeholder="$t('notice.noticeTitle')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" placeholder="请选择公告类型">
-                <el-option label="通知" value="1" />
-                <el-option label="公告" value="2" />
+            <el-form-item :label="$t('notice.noticeType')" prop="noticeType">
+              <el-select v-model="form.noticeType" :placeholder="$t('notice.selectNoticeType')">
+                <el-option :label="$t('notice.noticeTypeNotice')" value="1" />
+                <el-option :label="$t('notice.noticeTypeAnnouncement')" value="2" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="公告内容" prop="noticeContent">
+        <el-form-item :label="$t('notice.noticeContent')" prop="noticeContent">
           <div style="border: 1px solid #ccc">
             <Toolbar
               style="border-bottom: 1px solid #ccc"
@@ -111,51 +111,51 @@
         </el-form-item>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="公告状态" prop="status">
+            <el-form-item :label="$t('notice.status')" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">关闭</el-radio>
+                <el-radio label="0">{{ $t('notice.normal') }}</el-radio>
+                <el-radio label="1">{{ $t('notice.closed') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- 查看对话框 -->
-    <el-dialog v-model="viewVisible" title="公告详情" width="800px" class="notice-detail-dialog">
+    <el-dialog v-model="viewVisible" :title="$t('notice.noticeDetail')" width="800px" class="notice-detail-dialog">
       <template #header>
         <div class="dialog-header">
-          <span>公告详情</span>
+          <span>{{ $t('notice.noticeDetail') }}</span>
         </div>
       </template>
       <div class="notice-detail-container">
         <div class="notice-detail-info">
           <div class="info-item">
-            <span class="info-label">公告标题：</span>
+            <span class="info-label">{{ $t('notice.noticeTitle') }}：</span>
             <span class="info-value">{{ viewData.noticeTitle }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">公告类型：</span>
-            <el-tag v-if="viewData.noticeType === '1'" type="primary" size="small">通知</el-tag>
-            <el-tag v-else-if="viewData.noticeType === '2'" type="success" size="small">公告</el-tag>
+            <span class="info-label">{{ $t('notice.noticeType') }}：</span>
+            <el-tag v-if="viewData.noticeType === '1'" type="primary" size="small">{{ $t('notice.noticeTypeNotice') }}</el-tag>
+            <el-tag v-else-if="viewData.noticeType === '2'" type="success" size="small">{{ $t('notice.noticeTypeAnnouncement') }}</el-tag>
           </div>
           <div class="info-item">
-            <span class="info-label">公告状态：</span>
+            <span class="info-label">{{ $t('notice.status') }}：</span>
             <el-tag :type="viewData.status === '0' ? 'success' : 'danger'" size="small">
-              {{ viewData.status === '0' ? '正常' : '关闭' }}
+              {{ viewData.status === '0' ? $t('notice.normal') : $t('notice.closed') }}
             </el-tag>
           </div>
           <div class="info-item">
-            <span class="info-label">创建者：</span>
+            <span class="info-label">{{ $t('notice.creator') }}：</span>
             <span class="info-value">{{ viewData.createBy }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">创建时间：</span>
+            <span class="info-label">{{ $t('notice.createTime') }}：</span>
             <span class="info-value">{{ viewData.createTime }}</span>
           </div>
         </div>
@@ -169,11 +169,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onBeforeUnmount, shallowRef } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, shallowRef, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
 import { noticeApi, fileApi } from '@/api/system'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef()

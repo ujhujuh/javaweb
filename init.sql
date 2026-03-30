@@ -557,7 +557,7 @@ INSERT INTO `sys_config` (`id`, `config_name`, `config_key`, `config_value`, `co
 -- 初始化数据 - 通知公告
 -- =============================================
 INSERT INTO `sys_notice` (`id`, `notice_title`, `notice_type`, `notice_content`, `status`, `create_by`, `remark`) VALUES
-(1, '欢迎使用JavaWeb管理系统', '1', '<p>欢迎使用JavaWeb管理系统，这是一个企业级的Web应用框架。</p><p>系统特点：</p><ul><li>基于Spring Boot + MyBatis-Plus开发</li><li>完善的RBAC权限管理</li><li>丰富的系统功能模块</li><li>灵活的配置管理</li></ul>', '0', 'admin', '欢迎公告'),
+(1, '欢迎使用JavaWeb', '1', '<p>欢迎使用JavaWeb，这是一个企业级的Web应用框架。</p><p>系统特点：</p><ul><li>基于Spring Boot + MyBatis-Plus开发</li><li>完善的RBAC权限管理</li><li>丰富的系统功能模块</li><li>灵活的配置管理</li></ul>', '0', 'admin', '欢迎公告'),
 (2, '系统升级公告', '2', '<p>系统将于本周六凌晨2:00-4:00进行升级维护。</p><p>升级内容：</p><ul><li>优化系统性能</li><li>修复已知问题</li><li>新增功能模块</li></ul><p>请提前做好数据备份，给您带来的不便敬请谅解。</p>', '0', 'admin', '系统维护'),
 (3, '年度总结会议通知', '1', '<p>各位同事：</p><p>公司将于2024年12月31日下午14:00在第一会议室召开年度总结会议。</p><p>会议议程：</p><ul><li>年度工作总结</li><li>优秀员工表彰</li><li>下年度工作计划</li></ul><p>请各部门提前准备好相关材料，准时参会。</p>', '0', 'admin', '会议通知'),
 (4, '假期放假通知', '2', '<p>根据国家法定节假日安排，现将2025年春节放假安排通知如下：</p><p><strong>放假时间：</strong>2025年1月28日至2月3日，共7天。</p><p><strong>复工时间：</strong>2025年2月4日（星期二）。</p><p>请各部门提前做好工作安排，确保节前节后工作顺利衔接。</p><p>祝大家春节快乐，阖家幸福！</p>', '0', 'admin', '放假通知'),

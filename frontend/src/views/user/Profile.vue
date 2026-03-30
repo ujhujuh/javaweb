@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="个人中心"
+    :title="$t('profile.personalCenter')"
     width="700px"
     :close-on-click-modal="false"
     class="profile-dialog"
@@ -16,7 +16,7 @@
             </div>
             <div class="avatar-info">
               <div class="username">{{ userInfo.nickname || userInfo.username }}</div>
-              <div class="user-id">ID: {{ userInfo.id }}</div>
+              <div class="user-id">{{ $t('profile.userId') }}: {{ userInfo.id }}</div>
             </div>
           </div>
 
@@ -26,42 +26,42 @@
             <div class="info-item">
               <el-icon class="info-icon"><User /></el-icon>
               <div class="info-content">
-                <div class="info-label">用户名</div>
+                <div class="info-label">{{ $t('profile.username') }}</div>
                 <div class="info-value">{{ userInfo.username }}</div>
               </div>
             </div>
             <div class="info-item">
               <el-icon class="info-icon"><Message /></el-icon>
               <div class="info-content">
-                <div class="info-label">邮箱</div>
-                <div class="info-value">{{ userInfo.email || '未设置' }}</div>
+                <div class="info-label">{{ $t('profile.email') }}</div>
+                <div class="info-value">{{ userInfo.email || $t('profile.notSet') }}</div>
               </div>
             </div>
             <div class="info-item">
               <el-icon class="info-icon"><Phone /></el-icon>
               <div class="info-content">
-                <div class="info-label">手机号</div>
-                <div class="info-value">{{ userInfo.phone || '未设置' }}</div>
+                <div class="info-label">{{ $t('profile.phone') }}</div>
+                <div class="info-value">{{ userInfo.phone || $t('profile.notSet') }}</div>
               </div>
             </div>
             <div class="info-item">
               <el-icon class="info-icon"><Male v-if="userInfo.sex === '1'" /><Female v-else-if="userInfo.sex === '2'" /><QuestionFilled v-else /></el-icon>
               <div class="info-content">
-                <div class="info-label">性别</div>
+                <div class="info-label">{{ $t('profile.gender') }}</div>
                 <div class="info-value">
-                  <span v-if="userInfo.sex === '1'">男</span>
-                  <span v-else-if="userInfo.sex === '2'">女</span>
-                  <span v-else>未知</span>
+                  <span v-if="userInfo.sex === '1'">{{ $t('profile.genderMale') }}</span>
+                  <span v-else-if="userInfo.sex === '2'">{{ $t('profile.genderFemale') }}</span>
+                  <span v-else>{{ $t('profile.genderUnknown') }}</span>
                 </div>
               </div>
             </div>
             <div class="info-item">
               <el-icon class="info-icon"><CircleCheck v-if="userInfo.status === '0'" /><CircleClose v-else /></el-icon>
               <div class="info-content">
-                <div class="info-label">状态</div>
+                <div class="info-label">{{ $t('profile.status') }}</div>
                 <div class="info-value">
                   <el-tag :type="userInfo.status === '0' ? 'success' : 'danger'" size="small">
-                    {{ userInfo.status === '0' ? '正常' : '停用' }}
+                    {{ userInfo.status === '0' ? $t('profile.statusNormal') : $t('profile.statusDisabled') }}
                   </el-tag>
                 </div>
               </div>
@@ -69,7 +69,7 @@
             <div class="info-item">
               <el-icon class="info-icon"><Clock /></el-icon>
               <div class="info-content">
-                <div class="info-label">创建时间</div>
+                <div class="info-label">{{ $t('profile.createTime') }}</div>
                 <div class="info-value">{{ userInfo.createTime }}</div>
               </div>
             </div>
@@ -82,46 +82,46 @@
         <div class="password-card">
           <div class="card-header">
             <el-icon class="header-icon"><Lock /></el-icon>
-            <span class="header-title">修改密码</span>
+            <span class="header-title">{{ $t('profile.changePassword') }}</span>
           </div>
 
           <el-form
             ref="passwordFormRef"
             :model="passwordForm"
             :rules="passwordRules"
-            label-width="80px"
+            :label-width="locale === 'zh-CN' ? '80px' : '120px'"
             class="password-form"
           >
-            <el-form-item label="原密码" prop="oldPassword">
+            <el-form-item :label="$t('profile.oldPassword')" prop="oldPassword">
               <el-input
                 v-model="passwordForm.oldPassword"
                 type="password"
                 show-password
-                placeholder="请输入原密码"
+                :placeholder="$t('profile.placeholderOldPassword')"
               >
                 <template #prefix>
                   <el-icon><Lock /></el-icon>
                 </template>
               </el-input>
             </el-form-item>
-            <el-form-item label="新密码" prop="newPassword">
+            <el-form-item :label="$t('profile.newPassword')" prop="newPassword">
               <el-input
                 v-model="passwordForm.newPassword"
                 type="password"
                 show-password
-                placeholder="请输入新密码（至少6位）"
+                :placeholder="$t('profile.placeholderNewPassword')"
               >
                 <template #prefix>
                   <el-icon><Lock /></el-icon>
                 </template>
               </el-input>
             </el-form-item>
-            <el-form-item label="确认密码" prop="confirmPassword">
+            <el-form-item :label="$t('profile.confirmPassword')" prop="confirmPassword">
               <el-input
                 v-model="passwordForm.confirmPassword"
                 type="password"
                 show-password
-                placeholder="请再次输入新密码"
+                :placeholder="$t('profile.placeholderConfirmPassword')"
               >
                 <template #prefix>
                   <el-icon><Lock /></el-icon>
@@ -131,14 +131,14 @@
 
             <div class="password-tips">
               <el-icon><InfoFilled /></el-icon>
-              <span>密码修改成功后需要重新登录</span>
+              <span>{{ $t('profile.passwordChangeTip') }}</span>
             </div>
 
             <div class="form-actions">
-              <el-button size="large" @click="handleCancel">取消</el-button>
+              <el-button size="large" @click="handleCancel">{{ $t('profile.cancel') }}</el-button>
               <el-button type="primary" size="large" @click="handleUpdatePassword">
                 <el-icon><Check /></el-icon>
-                确认修改
+                {{ $t('profile.confirmChange') }}
               </el-button>
             </div>
           </el-form>
@@ -148,14 +148,15 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">关闭</el-button>
+        <el-button @click="handleClose">{{ $t('profile.close') }}</el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import {
   User,
@@ -171,6 +172,8 @@ import {
   InfoFilled,
   Check
 } from '@element-plus/icons-vue'
+
+const { t, locale } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -194,20 +197,20 @@ const passwordForm = ref({
   confirmPassword: ''
 })
 
-const passwordRules = {
+const passwordRules = computed(() => ({
   oldPassword: [
-    { required: true, message: '请输入原密码', trigger: 'blur' }
+    { required: true, message: t('profile.validationOldPasswordRequired'), trigger: 'blur' }
   ],
   newPassword: [
-    { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    { required: true, message: t('profile.validationNewPasswordRequired'), trigger: 'blur' },
+    { min: 6, message: t('profile.validationNewPasswordMinLength'), trigger: 'blur' }
   ],
   confirmPassword: [
-    { required: true, message: '请确认新密码', trigger: 'blur' },
+    { required: true, message: t('profile.validationConfirmPasswordRequired'), trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (value !== passwordForm.value.newPassword) {
-          callback(new Error('两次输入的密码不一致'))
+          callback(new Error(t('profile.validationPasswordMismatch')))
         } else {
           callback()
         }
@@ -215,7 +218,7 @@ const passwordRules = {
       trigger: 'blur'
     }
   ]
-}
+}))
 
 watch(() => props.modelValue, (val) => {
   visible.value = val
@@ -260,7 +263,7 @@ const handleUpdatePassword = async () => {
         }
         passwordFormRef.value?.clearValidate()
       } catch (error) {
-        ElMessage.error(error.message || '修改失败')
+        ElMessage.error(error.message || t('profile.updatePasswordFailed'))
       }
     }
   })

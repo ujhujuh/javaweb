@@ -3,28 +3,28 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>评论管理</span>
+          <span>{{ $t('news.commentManagement') }}</span>
         </div>
       </template>
 
       <el-form :model="queryForm" inline>
-        <el-form-item label="关键词">
-          <el-input v-model="queryForm.keyword" placeholder="评论内容" clearable style="width: 220px" />
+        <el-form-item :label="$t('common.query')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-input v-model="queryForm.keyword" :placeholder="$t('news.commentContent')" clearable style="width: 220px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="newsTitle" label="资讯标题" min-width="220" show-overflow-tooltip />
-        <el-table-column prop="nickname" label="用户" width="120" />
-        <el-table-column prop="content" label="评论内容" min-width="260" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="评论时间" width="180" />
-        <el-table-column label="操作" width="120" fixed="right">
+        <el-table-column prop="newsTitle" :label="$t('news.newsTitle')" min-width="220" show-overflow-tooltip />
+        <el-table-column prop="nickname" :label="$t('news.commentUser')" width="120" />
+        <el-table-column prop="content" :label="$t('news.commentContent')" min-width="260" show-overflow-tooltip />
+        <el-table-column prop="createTime" :label="$t('news.commentTime')" width="180" />
+        <el-table-column :label="$t('common.operation')" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -44,9 +44,13 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { newsManageApi } from '@/api/system'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const loading = ref(false)
 const tableData = ref([])

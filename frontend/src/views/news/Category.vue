@@ -3,66 +3,70 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>分类管理</span>
-          <el-button type="primary" @click="handleAdd">新增分类</el-button>
+          <span>{{ $t('news.categoryManagement') }}</span>
+          <el-button type="primary" @click="handleAdd">{{ $t('common.add') }}</el-button>
         </div>
       </template>
 
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="categoryName" label="分类名称" min-width="220" />
-        <el-table-column prop="parentId" label="父级ID" width="100" />
-        <el-table-column prop="sortNum" label="排序" width="100" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="categoryName" :label="$t('news.categoryName')" min-width="220" />
+        <el-table-column prop="parentId" :label="$t('news.parentId')" width="100" />
+        <el-table-column prop="sortNum" :label="$t('menu.sort')" width="100" />
+        <el-table-column prop="status" :label="$t('user.status')" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === '0' ? 'success' : 'danger'">{{ row.status === '0' ? '正常' : '禁用' }}</el-tag>
+            <el-tag :type="row.status === '0' ? 'success' : 'danger'">{{ row.status === '0' ? $t('user.statusNormal') : $t('user.statusDisabled') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column :label="$t('common.operation')" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="名称" prop="categoryName">
-          <el-input v-model="form.categoryName" />
+      <el-form :model="form" :rules="rules" ref="formRef" :label-width="isEnglish ? '100px' : '80px'">
+        <el-form-item :label="$t('news.categoryName')" prop="categoryName">
+          <el-input v-model="form.categoryName" :placeholder="$t('news.categoryName')" />
         </el-form-item>
-        <el-form-item label="父级ID">
+        <el-form-item :label="$t('news.parentId')">
           <el-input-number v-model="form.parentId" :min="0" />
         </el-form-item>
-        <el-form-item label="排序">
+        <el-form-item :label="$t('menu.sort')">
           <el-input-number v-model="form.sortNum" :min="0" />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item :label="$t('user.status')">
           <el-radio-group v-model="form.status">
-            <el-radio label="0">正常</el-radio>
-            <el-radio label="1">禁用</el-radio>
+            <el-radio label="0">{{ $t('user.statusNormal') }}</el-radio>
+            <el-radio label="1">{{ $t('user.statusDisabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { newsManageApi } from '@/api/system'
+import { useI18n } from 'vue-i18n'
 
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 const loading = ref(false)
 const tableData = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref()
+const $t = t
 
 const form = reactive({
   id: null,
@@ -73,7 +77,7 @@ const form = reactive({
 })
 
 const rules = {
-  categoryName: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
+  categoryName: [{ required: true, message: t('validation.required'), trigger: 'blur' }]
 }
 
 const loadList = async () => {
@@ -95,13 +99,13 @@ const resetForm = () => {
 }
 
 const handleAdd = () => {
-  dialogTitle.value = '新增分类'
+  dialogTitle.value = $t('news.addDictType')
   resetForm()
   dialogVisible.value = true
 }
 
 const handleEdit = (row) => {
-  dialogTitle.value = '编辑分类'
+  dialogTitle.value = $t('news.editDictType')
   form.id = row.id
   form.categoryName = row.categoryName
   form.parentId = row.parentId || 0
@@ -111,9 +115,9 @@ const handleEdit = (row) => {
 }
 
 const handleDelete = async (row) => {
-  await ElMessageBox.confirm(`确认删除分类「${row.categoryName}」吗？`, '提示', { type: 'warning' })
+  await ElMessageBox.confirm($t('common.confirmDelete'), '提示', { type: 'warning' })
   await newsManageApi.deleteCategory(row.id)
-  ElMessage.success('删除成功')
+  ElMessage.success($t('common.success'))
   await loadList()
 }
 

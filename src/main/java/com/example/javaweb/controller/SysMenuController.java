@@ -25,10 +25,32 @@ public class SysMenuController {
         SysUser user = CurrentUserContext.getUser();
         if (user != null) {
             List<SysMenu> menus = sysMenuService.selectMenusByUserId(user.getId());
+
+            // 从 CurrentUserContext 获取语言
+            String lang = CurrentUserContext.getLanguage();
+            for (SysMenu menu : menus) {
+                setMenuNameByLanguage(menu, lang);
+            }
+
             List<SysMenu> menuTree = sysMenuService.buildMenuTree(menus);
             return Result.success(menuTree);
         }
         return Result.success(null);
+    }
+
+    private void setMenuNameByLanguage(SysMenu menu, String lang) {
+        if ("en".equals(lang) && menu.getMenuNameEn() != null) {
+            menu.setMenuName(menu.getMenuNameEn());
+        } else if (menu.getMenuNameZh() != null) {
+            menu.setMenuName(menu.getMenuNameZh());
+        }
+
+        // 递归处理子菜单
+        if (menu.getChildren() != null) {
+            for (SysMenu child : menu.getChildren()) {
+                setMenuNameByLanguage(child, lang);
+            }
+        }
     }
 
     @ApiLog("查询菜单列表")

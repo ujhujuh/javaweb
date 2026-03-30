@@ -20,7 +20,7 @@
       >
         <el-menu-item index="/dashboard">
           <el-icon><House /></el-icon>
-          <template #title>首页</template>
+          <template #title>{{ $t('profile.systemTitle') || '首页' }}</template>
         </el-menu-item>
         <template v-for="menu in menuList" :key="menu.id">
           <!-- 有子菜单 -->
@@ -59,7 +59,7 @@
         >
           <el-menu-item index="/dashboard">
             <el-icon><House /></el-icon>
-            <span>首页</span>
+            <span>{{ $t('profile.systemTitle') || '首页' }}</span>
           </el-menu-item>
           <template v-for="menu in menuList" :key="menu.id">
             <!-- 有子菜单 -->
@@ -90,7 +90,7 @@
     <el-container>
       <el-header v-if="!isHorizontal">
         <div class="header-content">
-          <span>JavaWeb管理系统</span>
+          <span>JavaWeb</span>
           <div class="header-right">
             <div class="user-info">
               <el-dropdown @command="handleCommand">
@@ -101,22 +101,38 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                    <el-dropdown-item @click="handleLanguageChange('zh-CN')">
+                      <el-icon v-if="isChinese"><Check /></el-icon>
+                      <span v-else style="width: 1em; display: inline-block;"></span>
+                      {{ $t('profile.chinese') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="handleLanguageChange('en-US')">
+                      <el-icon v-if="isEnglish"><Check /></el-icon>
+                      <span v-else style="width: 1em; display: inline-block;"></span>
+                      {{ $t('profile.english') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item divided command="profile">
+                      <el-icon class="dropdown-item-icon"><User /></el-icon>
+                      {{ $t('profile.personalCenter') }}
+                    </el-dropdown-item>
                     <el-dropdown-item command="refresh" divided>
                       <el-icon class="dropdown-item-icon"><Refresh /></el-icon>
-                      系统刷新
+                      {{ $t('profile.systemRefresh') }}
                     </el-dropdown-item>
                     <el-dropdown-item command="toggleMenu">
                       <el-icon class="dropdown-item-icon">
                         <component :is="isHorizontal ? Menu : Expand" />
                       </el-icon>
-                      切换为{{ isHorizontal ? '纵向' : '横向' }}菜单
+                      {{ isHorizontal ? $t('profile.toggleVertical') : $t('profile.toggleHorizontal') }}
                     </el-dropdown-item>
                     <el-dropdown-item command="theme" divided>
                       <el-icon class="dropdown-item-icon"><Sunny /></el-icon>
-                      切换主题
+                      {{ $t('profile.toggleTheme') }}
                     </el-dropdown-item>
-                    <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+                    <el-dropdown-item command="logout" divided>
+                      <el-icon class="dropdown-item-icon"><SwitchButton /></el-icon>
+                      {{ $t('profile.logout') }}
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -128,7 +144,7 @@
       <!-- 横向模式下的控制栏 -->
       <el-header v-if="isHorizontal" class="control-header">
         <div class="header-content">
-          <span>JavaWeb管理系统</span>
+          <span>JavaWeb</span>
           <div class="header-right">
             <div class="user-info">
               <el-dropdown @command="handleCommand">
@@ -139,22 +155,38 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                    <el-dropdown-item @click="handleLanguageChange('zh-CN')">
+                      <el-icon v-if="isChinese"><Check /></el-icon>
+                      <span v-else style="width: 1em; display: inline-block;"></span>
+                      {{ $t('profile.chinese') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="handleLanguageChange('en-US')">
+                      <el-icon v-if="isEnglish"><Check /></el-icon>
+                      <span v-else style="width: 1em; display: inline-block;"></span>
+                      {{ $t('profile.english') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item divided command="profile">
+                      <el-icon class="dropdown-item-icon"><User /></el-icon>
+                      {{ $t('profile.personalCenter') }}
+                    </el-dropdown-item>
                     <el-dropdown-item command="refresh" divided>
                       <el-icon class="dropdown-item-icon"><Refresh /></el-icon>
-                      系统刷新
+                      {{ $t('profile.systemRefresh') }}
                     </el-dropdown-item>
                     <el-dropdown-item command="toggleMenu">
                       <el-icon class="dropdown-item-icon">
                         <component :is="isHorizontal ? Menu : Expand" />
                       </el-icon>
-                      切换为{{ isHorizontal ? '纵向' : '横向' }}菜单
+                      {{ isHorizontal ? $t('profile.toggleVertical') : $t('profile.toggleHorizontal') }}
                     </el-dropdown-item>
                     <el-dropdown-item command="theme" divided>
                       <el-icon class="dropdown-item-icon"><Sunny /></el-icon>
-                      切换主题
+                      {{ $t('profile.toggleTheme') }}
                     </el-dropdown-item>
-                    <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+                    <el-dropdown-item command="logout" divided>
+                      <el-icon class="dropdown-item-icon"><SwitchButton /></el-icon>
+                      {{ $t('profile.logout') }}
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -197,10 +229,10 @@
       />
 
       <!-- 主题选择对话框 -->
-      <el-dialog v-model="themeDialogVisible" title="切换主题" width="500px">
+      <el-dialog v-model="themeDialogVisible" :title="$t('profile.toggleTheme')" width="500px">
         <div class="theme-options">
           <div
-            v-for="theme in themeStore.getAllThemes()"
+            v-for="theme in themeOptions"
             :key="theme.key"
             class="theme-option"
             :class="{ 'theme-option-selected': selectedTheme === theme.key }"
@@ -219,8 +251,8 @@
           </div>
         </div>
         <template #footer>
-          <el-button @click="themeDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleThemeConfirm">确定</el-button>
+          <el-button @click="themeDialogVisible = false">{{ $t('profile.cancel') }}</el-button>
+          <el-button type="primary" @click="handleThemeConfirm">{{ $t('profile.confirm') }}</el-button>
         </template>
       </el-dialog>
 
@@ -235,8 +267,9 @@
 import { computed, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { noticeApi, menuApi, userConfigApi } from '@/api/system'
+import { noticeApi, menuApi, userConfigApi, userApi } from '@/api/system'
 import MenuItem from '@/components/MenuItem.vue'
 import Profile from '@/views/user/Profile.vue'
 import { useThemeStore, ThemeType } from '@/store/theme'
@@ -256,9 +289,9 @@ import {
   Fold,
   Menu,
   Loading,
+  Check,
   Sunny,
-  Moon,
-  Check
+  Moon
 } from '@element-plus/icons-vue'
 
 // 图标映射
@@ -287,6 +320,17 @@ const iconMap = {
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const { locale, t } = useI18n()
+
+const language = computed(() => userStore.language)
+const isChinese = computed(() => {
+  const lang = language.value.toLowerCase()
+  return lang === 'zh-cn' || lang === 'zh'
+})
+const isEnglish = computed(() => {
+  const lang = language.value.toLowerCase()
+  return lang === 'en-us' || lang === 'en'
+})
 const themeStore = useThemeStore()
 
 const activeMenu = computed(() => route.path)
@@ -319,6 +363,17 @@ const isHorizontal = ref(false)
 // 主题选择对话框
 const themeDialogVisible = ref(false)
 const selectedTheme = ref(themeStore.currentTheme)
+
+// 主题选项（使用 i18n 翻译）
+const themeOptions = computed(() => {
+  const themes = themeStore.getAllThemes()
+  return themes.map(theme => ({
+    key: theme.key,
+    icon: theme.icon,
+    name: t(`profile.theme${theme.key.charAt(0).toUpperCase() + theme.key.slice(1)}`),
+    description: t(`profile.theme${theme.key.charAt(0).toUpperCase() + theme.key.slice(1)}Desc`)
+  }))
+})
 
 // 加载用户配置
 const loadUserConfig = async () => {
@@ -393,10 +448,10 @@ const handleCommand = async (command) => {
   if (command === 'logout') {
     try {
       await userStore.logoutAction()
-      ElMessage.success('退出成功')
+      ElMessage.success(t('profile.logoutSuccess'))
       router.push('/login')
     } catch (error) {
-      ElMessage.error(error.message || '退出失败')
+      ElMessage.error(error.message || t('profile.logoutFailed'))
     }
   } else if (command === 'profile' || command === 'password') {
     loadUserInfo()
@@ -420,7 +475,37 @@ const handleThemeSelect = (theme) => {
 const handleThemeConfirm = () => {
   themeStore.setTheme(selectedTheme.value)
   themeDialogVisible.value = false
-  ElMessage.success('主题切换成功')
+  ElMessage.success(t('profile.themeChangeSuccess'))
+}
+
+const handleLanguageChange = async (lang) => {
+  locale.value = lang
+  userStore.setLanguage(lang)
+
+  // 调用后端 API 更新用户的语言偏好
+  try {
+    const userInfo = userStore.userInfo
+    if (userInfo && userInfo.id) {
+      // 将前端语言值（zh-CN/en-US）转换为后端期望的格式（zh/en）
+      const backendLanguage = lang.toLowerCase().includes('en') ? 'en' : 'zh'
+      await userApi.updateLanguage({
+        id: userInfo.id,
+        language: backendLanguage
+      })
+    }
+  } catch (error) {
+    console.error('更新用户语言偏好失败', error)
+  }
+
+  // 重新加载菜单以获取对应语言的菜单数据
+  await loadMenus()
+
+  ElMessage.success(t('profile.languageSwitchSuccess'))
+
+  // 刷新页面以应用新语言到所有组件
+  setTimeout(() => {
+    window.location.reload()
+  }, 500)
 }
 
 const loadUserInfo = async () => {
@@ -438,23 +523,23 @@ const handleUpdatePassword = async (passwordData) => {
   try {
     // 这里需要调用修改密码的API
     // await updateUserPassword(passwordData)
-    ElMessage.success('密码修改成功，请重新登录')
+    ElMessage.success(t('profile.passwordChangeSuccess'))
     profileVisible.value = false
     await userStore.logoutAction()
     router.push('/login')
   } catch (error) {
-    ElMessage.error(error.message || '修改失败')
+    ElMessage.error(error.message || t('profile.passwordChangeFailed'))
   }
 }
 
 const handleRefreshMenu = async () => {
   try {
     await menuApi.refresh()
-    ElMessage.success('菜单缓存已刷新，正在重新加载...')
+    ElMessage.success(t('profile.refreshMenuSuccess'))
     // 重新加载菜单
     await loadMenus()
   } catch (error) {
-    ElMessage.error(error.message || '刷新菜单失败')
+    ElMessage.error(error.message || t('profile.refreshMenuFailed'))
   }
 }
 
@@ -543,6 +628,11 @@ const viewNotice = async (notice) => {
 }
 
 onMounted(async () => {
+  // 确保i18n的locale与userStore的language同步
+  if (locale.value !== language.value) {
+    locale.value = language.value
+  }
+
   await loadUserConfig()
   loadMenus()
   loadNotices()

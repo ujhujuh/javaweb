@@ -3,27 +3,27 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>互动管理</span>
+          <span>{{ $t('news.interactionManagement') }}</span>
         </div>
       </template>
 
       <el-form :model="queryForm" inline>
-        <el-form-item label="关键词">
-          <el-input v-model="queryForm.keyword" placeholder="标题/摘要" clearable style="width: 220px" />
+        <el-form-item :label="$t('common.query')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-input v-model="queryForm.keyword" :placeholder="$t('news.newsTitle')" clearable style="width: 220px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="title" label="资讯标题" min-width="260" show-overflow-tooltip />
-        <el-table-column prop="viewCount" label="阅读" width="100" />
-        <el-table-column prop="likeCount" label="点赞" width="100" />
-        <el-table-column prop="favoriteCount" label="收藏" width="100" />
-        <el-table-column prop="commentCount" label="评论" width="100" />
-        <el-table-column prop="publishTime" label="发布时间" width="180" />
+        <el-table-column prop="title" :label="$t('news.newsTitle')" min-width="260" show-overflow-tooltip />
+        <el-table-column prop="viewCount" :label="$t('news.viewCount')" width="100" />
+        <el-table-column prop="likeCount" :label="$t('news.likeCount')" width="100" />
+        <el-table-column prop="favoriteCount" :label="$t('news.favoriteCount')" width="100" />
+        <el-table-column prop="commentCount" :label="$t('news.commentCount')" width="100" />
+        <el-table-column prop="publishTime" :label="$t('news.publishTime')" width="180" />
       </el-table>
 
       <el-pagination
@@ -41,8 +41,12 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, computed } from 'vue'
 import { newsManageApi } from '@/api/system'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const loading = ref(false)
 const tableData = ref([])

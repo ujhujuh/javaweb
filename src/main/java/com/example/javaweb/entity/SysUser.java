@@ -28,6 +28,8 @@ public class SysUser implements Serializable {
 
     private String avatar;
 
+    private String language;
+
     private String password;
 
     private String status;

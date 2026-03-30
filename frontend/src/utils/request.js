@@ -14,6 +14,11 @@ service.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = token
     }
+
+    // 添加语言请求头
+    const language = localStorage.getItem('language') || 'zh-CN'
+    config.headers['Accept-Language'] = language === 'en-US' ? 'en' : 'zh'
+
     return config
   },
   error => {

@@ -3,24 +3,24 @@
     <el-card class="login-card">
       <template #header>
         <div class="card-header">
-          <span>JavaWeb管理系统</span>
+          <span>{{ $t('system.systemName') }}</span>
         </div>
       </template>
       <el-form ref="loginFormRef" :model="loginForm" :rules="rules" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="loginForm.username" placeholder="请输入用户名" />
+        <el-form-item :label="$t('auth.username')" prop="username">
+          <el-input v-model="loginForm.username" :placeholder="$t('auth.username')" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" />
+        <el-form-item :label="$t('auth.password')" prop="password">
+          <el-input v-model="loginForm.password" type="password" :placeholder="$t('auth.password')" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleLogin" :loading="loading" style="width: 100%">
-            登录
+            {{ $t('auth.login') }}
           </el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="text" @click="goToRegister" style="width: 100%">
-            还没有账号？去注册
+            {{ $t('auth.noAccount') }}{{ $t('auth.goToRegister') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -33,9 +33,11 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const userStore = useUserStore()
+const { t } = useI18n()
 
 const loginFormRef = ref()
 const loading = ref(false)
@@ -46,8 +48,8 @@ const loginForm = reactive({
 })
 
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  username: [{ required: true, message: t('validation.required'), trigger: 'blur' }],
+  password: [{ required: true, message: t('validation.required'), trigger: 'blur' }]
 }
 
 const handleLogin = async () => {

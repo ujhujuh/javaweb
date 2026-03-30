@@ -3,59 +3,59 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>内容管理</span>
-          <el-button type="primary" @click="handleAdd">新增内容</el-button>
+          <span>{{ $t('news.contentManagement') }}</span>
+          <el-button type="primary" @click="handleAdd">{{ $t('news.addContent') }}</el-button>
         </div>
       </template>
 
       <el-form :model="queryForm" inline>
-        <el-form-item label="关键词">
-          <el-input v-model="queryForm.keyword" placeholder="标题/摘要" clearable style="width: 220px" />
+        <el-form-item :label="$t('common.query')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-input v-model="queryForm.keyword" :placeholder="$t('news.newsTitle')" clearable style="width: 220px" />
         </el-form-item>
-        <el-form-item label="分类">
-          <el-select v-model="queryForm.categoryId" clearable placeholder="全部分类" style="width: 180px">
+        <el-form-item :label="$t('news.newsCategory')" :label-width="isEnglish ? '120px' : 'auto'">
+          <el-select v-model="queryForm.categoryId" clearable :placeholder="$t('common.query')" style="width: 180px">
             <el-option v-for="item in categoryOptions" :key="item.id" :label="item.categoryName" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" clearable placeholder="全部状态" style="width: 140px">
-            <el-option label="草稿" value="0" />
-            <el-option label="发布" value="1" />
-            <el-option label="下线" value="2" />
+        <el-form-item :label="$t('news.status')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-select v-model="queryForm.status" clearable :placeholder="$t('common.query')" style="width: 140px">
+            <el-option :label="$t('news.draft')" value="0" />
+            <el-option :label="$t('news.published')" value="1" />
+            <el-option :label="$t('news.offline')" value="2" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="title" label="标题" min-width="260" show-overflow-tooltip />
-        <el-table-column prop="categoryId" label="分类" width="140">
+        <el-table-column prop="title" :label="$t('news.newsTitle')" min-width="260" show-overflow-tooltip />
+        <el-table-column prop="categoryId" :label="$t('news.newsCategory')" width="140">
           <template #default="{ row }">{{ getCategoryName(row.categoryId) }}</template>
         </el-table-column>
-        <el-table-column prop="visibleScope" label="可见范围" width="110">
+        <el-table-column prop="visibleScope" :label="$t('news.visibleScope')" width="110">
           <template #default="{ row }">
-            <el-tag :type="row.visibleScope === '1' ? 'warning' : 'success'">{{ row.visibleScope === '1' ? '登录可见' : '公开' }}</el-tag>
+            <el-tag :type="row.visibleScope === '1' ? 'warning' : 'success'">{{ row.visibleScope === '1' ? $t('news.loginVisible') : $t('news.public') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" :label="$t('news.status')" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === '1' ? 'success' : row.status === '0' ? 'info' : 'danger'">
-              {{ row.status === '1' ? '发布' : row.status === '0' ? '草稿' : '下线' }}
+              {{ row.status === '1' ? $t('news.published') : row.status === '0' ? $t('news.draft') : $t('news.offline') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="viewCount" label="阅读" width="80" />
-        <el-table-column prop="likeCount" label="点赞" width="80" />
-        <el-table-column prop="favoriteCount" label="收藏" width="80" />
-        <el-table-column prop="commentCount" label="评论" width="80" />
-        <el-table-column prop="publishTime" label="发布时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column prop="viewCount" :label="$t('news.viewCount')" width="80" />
+        <el-table-column prop="likeCount" :label="$t('news.likeCount')" width="80" />
+        <el-table-column prop="favoriteCount" :label="$t('news.favoriteCount')" width="80" />
+        <el-table-column prop="commentCount" :label="$t('news.commentCount')" width="80" />
+        <el-table-column prop="publishTime" :label="$t('news.publishTime')" width="180" />
+        <el-table-column :label="$t('common.operation')" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -73,27 +73,27 @@
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="900px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
+      <el-form :model="form" :rules="rules" ref="formRef" :label-width="$t('common.labelWidth')">
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="标题" prop="title">
+            <el-form-item :label="$t('news.newsTitle')" prop="title">
               <el-input v-model="form.title" maxlength="200" show-word-limit />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="分类">
-              <el-select v-model="form.categoryId" clearable placeholder="选择分类" style="width: 100%">
+            <el-form-item :label="$t('news.newsCategory')">
+              <el-select v-model="form.categoryId" clearable :placeholder="$t('news.selectCategory')" style="width: 100%">
                 <el-option v-for="item in categoryOptions" :key="item.id" :label="item.categoryName" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="摘要">
+        <el-form-item :label="$t('news.summary')">
           <el-input v-model="form.summary" type="textarea" :rows="3" maxlength="1000" show-word-limit />
         </el-form-item>
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="封面图">
+            <el-form-item :label="$t('news.coverImage')">
               <el-upload
                 class="cover-uploader"
                 :show-file-list="false"
@@ -101,38 +101,38 @@
                 accept="image/*"
               >
                 <img v-if="form.coverImage" :src="form.coverImage" class="cover-preview" />
-                <el-button v-else type="primary" plain>上传封面图</el-button>
+                <el-button v-else type="primary" plain>{{ $t('news.uploadCover') }}</el-button>
               </el-upload>
               <div style="margin-top: 8px;">
-                <el-input v-model="form.coverImage" placeholder="或手动输入图片URL" />
+                <el-input v-model="form.coverImage" :placeholder="$t('news.orManualUrl')" />
               </div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="标签">
-              <el-input v-model="form.tags" placeholder="多个标签逗号分隔" />
+            <el-form-item :label="$t('news.tags')">
+              <el-input v-model="form.tags" :placeholder="$t('news.tagsPlaceholder')" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="可见范围">
+            <el-form-item :label="$t('news.visibleScope')">
               <el-radio-group v-model="form.visibleScope">
-                <el-radio value="0">公开</el-radio>
-                <el-radio value="1">登录可见</el-radio>
+                <el-radio value="0">{{ $t('news.public') }}</el-radio>
+                <el-radio value="1">{{ $t('news.loginVisible') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态">
+            <el-form-item :label="$t('news.status')">
               <el-radio-group v-model="form.status">
-                <el-radio value="0">草稿</el-radio>
-                <el-radio value="1">发布</el-radio>
+                <el-radio value="0">{{ $t('news.draft') }}</el-radio>
+                <el-radio value="1">{{ $t('news.published') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="正文" prop="content">
+        <el-form-item :label="$t('news.content')" prop="content">
           <div style="border: 1px solid #dcdfe6; width: 100%;">
             <Toolbar
               style="border-bottom: 1px solid #dcdfe6"
@@ -151,18 +151,22 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, reactive, ref, shallowRef } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, shallowRef, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { fileApi, newsManageApi } from '@/api/system'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const loading = ref(false)
 const tableData = ref([])

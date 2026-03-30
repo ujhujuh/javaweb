@@ -3,49 +3,49 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>参数设置</span>
+          <span>{{ $t('system.configManagement') }}</span>
           <div>
-            <el-button type="warning" @click="handleRefresh">刷新缓存</el-button>
-            <el-button type="primary" @click="handleAdd">新增</el-button>
+            <el-button type="warning" @click="handleRefresh">{{ $t('config.refreshCache') }}</el-button>
+            <el-button type="primary" @click="handleAdd">{{ $t('common.add') }}</el-button>
           </div>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="参数名称">
-          <el-input v-model="queryForm.configName" placeholder="请输入参数名称" clearable />
+        <el-form-item :label="$t('config.configName')">
+          <el-input v-model="queryForm.configName" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="参数键名">
-          <el-input v-model="queryForm.configKey" placeholder="请输入参数键名" clearable />
+        <el-form-item :label="$t('config.configKey')">
+          <el-input v-model="queryForm.configKey" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="系统内置">
-          <el-select v-model="queryForm.configType" placeholder="请选择" clearable style="width: 150px">
-            <el-option label="是" value="Y" />
-            <el-option label="否" value="N" />
+        <el-form-item :label="$t('config.systemBuiltIn')">
+          <el-select v-model="queryForm.configType" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('common.yes')" value="Y" />
+            <el-option :label="$t('common.no')" value="N" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="configName" label="参数名称" />
-        <el-table-column prop="configKey" label="参数键名" />
-        <el-table-column prop="configValue" label="参数键值" />
-        <el-table-column prop="configType" label="系统内置">
+        <el-table-column prop="configName" :label="$t('config.configName')" />
+        <el-table-column prop="configKey" :label="$t('config.configKey')" />
+        <el-table-column prop="configValue" :label="$t('config.configValue')" />
+        <el-table-column prop="configType" :label="$t('config.systemBuiltIn')">
           <template #default="{ row }">
             <el-tag :type="row.configType === 'Y' ? 'warning' : 'info'">
-              {{ row.configType === 'Y' ? '是' : '否' }}
+              {{ row.configType === 'Y' ? $t('common.yes') : $t('common.no') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column prop="remark" :label="$t('config.remark')" />
+        <el-table-column prop="createTime" :label="$t('user.createTime')" />
+        <el-table-column :label="$t('common.operation')" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)" :disabled="row.configType === 'Y'">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)" :disabled="row.configType === 'Y'">删除</el-button>
+            <el-button size="small" @click="handleEdit(row)" :disabled="row.configType === 'Y'">{{ $t('common.edit') }}</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)" :disabled="row.configType === 'Y'">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,28 +64,28 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
-        <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="form.configName" placeholder="请输入参数名称" />
+        <el-form-item :label="$t('config.configName')" prop="configName">
+          <el-input v-model="form.configName" :placeholder="$t('config.configName')" />
         </el-form-item>
-        <el-form-item label="参数键名" prop="configKey">
-          <el-input v-model="form.configKey" placeholder="请输入参数键名" :disabled="!!form.id" />
+        <el-form-item :label="$t('config.configKey')" prop="configKey">
+          <el-input v-model="form.configKey" :placeholder="$t('config.configKey')" :disabled="!!form.id" />
         </el-form-item>
-        <el-form-item label="参数键值" prop="configValue">
-          <el-input v-model="form.configValue" placeholder="请输入参数键值" />
+        <el-form-item :label="$t('config.configValue')" prop="configValue">
+          <el-input v-model="form.configValue" :placeholder="$t('config.configValue')" />
         </el-form-item>
-        <el-form-item label="系统内置" prop="configType">
+        <el-form-item :label="$t('config.systemBuiltIn')" prop="configType">
           <el-radio-group v-model="form.configType" :disabled="!!form.id">
-            <el-radio label="Y">是</el-radio>
-            <el-radio label="N">否</el-radio>
+            <el-radio label="Y">{{ $t('common.yes') }}</el-radio>
+            <el-radio label="N">{{ $t('common.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
+        <el-form-item :label="$t('config.remark')">
+          <el-input v-model="form.remark" type="textarea" :placeholder="$t('config.remark')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>

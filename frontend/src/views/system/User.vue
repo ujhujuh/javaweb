@@ -3,60 +3,60 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>用户管理</span>
+          <span>{{ $t('system.userManagement') }}</span>
           <div>
-            <el-button type="success" @click="handleExport">导出</el-button>
-            <el-button type="primary" @click="handleAdd">新增</el-button>
+            <el-button type="success" @click="handleExport">{{ $t('common.export') }}</el-button>
+            <el-button type="primary" @click="handleAdd">{{ $t('common.add') }}</el-button>
           </div>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="用户名">
-          <el-input v-model="queryForm.username" placeholder="请输入用户名" clearable />
+        <el-form-item :label="$t('user.username')" :label-width="isEnglish ? '90px' : 'auto'">
+          <el-input v-model="queryForm.username" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="昵称">
-          <el-input v-model="queryForm.nickname" placeholder="请输入昵称" clearable />
+        <el-form-item :label="$t('user.nickname')" :label-width="isEnglish ? '90px' : 'auto'">
+          <el-input v-model="queryForm.nickname" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="queryForm.phone" placeholder="请输入手机号" clearable />
+        <el-form-item :label="$t('user.phone')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-input v-model="queryForm.phone" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="正常" value="0" />
-            <el-option label="停用" value="1" />
+        <el-form-item :label="$t('user.status')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-select v-model="queryForm.status" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('user.statusNormal')" value="0" />
+            <el-option :label="$t('user.statusDisabled')" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="username" label="用户名" />
-        <el-table-column prop="nickname" label="昵称" />
-        <el-table-column prop="email" label="邮箱" />
-        <el-table-column prop="phone" label="手机号" />
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="username" :label="$t('user.username')" />
+        <el-table-column prop="nickname" :label="$t('user.nickname')" />
+        <el-table-column prop="email" :label="$t('user.email')" />
+        <el-table-column prop="phone" :label="$t('user.phone')" />
+        <el-table-column prop="status" :label="$t('user.status')">
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
-              {{ row.status === '0' ? '正常' : '停用' }}
+              {{ row.status === '0' ? $t('user.statusNormal') : $t('user.statusDisabled') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" width="240" fixed="right">
+        <el-table-column prop="createTime" :label="$t('user.createTime')" />
+        <el-table-column :label="$t('common.operation')" width="240" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
             <el-dropdown @command="(command) => handleCommandAction(command, row)">
               <el-button size="small" type="primary" style="margin-left: 8px;">
-                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{ $t('common.more') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="resetPassword">重置密码</el-dropdown-item>
-                  <el-dropdown-item command="authRole">角色授权</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                  <el-dropdown-item command="resetPassword">{{ $t('system.resetPassword') }}</el-dropdown-item>
+                  <el-dropdown-item command="authRole">{{ $t('system.authRole') }}</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">{{ $t('common.delete') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -78,57 +78,57 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" :disabled="!!form.id" />
+        <el-form-item :label="$t('user.username')" prop="username">
+          <el-input v-model="form.username" :placeholder="$t('common.query')" :disabled="!!form.id" />
         </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入昵称" />
+        <el-form-item :label="$t('user.nickname')" prop="nickname">
+          <el-input v-model="form.nickname" :placeholder="$t('user.nickname')" />
         </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="!form.id">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+        <el-form-item :label="$t('user.password')" prop="password" v-if="!form.id">
+          <el-input v-model="form.password" type="password" :placeholder="$t('user.password')" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
+        <el-form-item :label="$t('user.email')" prop="email">
+          <el-input v-model="form.email" :placeholder="$t('user.email')" />
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号" />
+        <el-form-item :label="$t('user.phone')" prop="phone">
+          <el-input v-model="form.phone" :placeholder="$t('user.phone')" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item :label="$t('user.status')" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio label="0">正常</el-radio>
-            <el-radio label="1">停用</el-radio>
+            <el-radio label="0">{{ $t('user.statusNormal') }}</el-radio>
+            <el-radio label="1">{{ $t('user.statusDisabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- 重置密码对话框 -->
-    <el-dialog v-model="resetPasswordVisible" title="重置密码" width="400px">
+    <el-dialog v-model="resetPasswordVisible" :title="$t('system.resetPassword')" width="400px">
       <el-form :model="resetPasswordForm" :rules="resetPasswordRules" ref="resetPasswordRef" label-width="80px">
-        <el-form-item label="用户名">
+        <el-form-item :label="$t('user.username')">
           <el-input v-model="resetPasswordForm.username" disabled />
         </el-form-item>
-        <el-form-item label="新密码" prop="newPassword">
-          <el-input v-model="resetPasswordForm.newPassword" type="password" placeholder="请输入新密码" />
+        <el-form-item :label="$t('user.password')" prop="newPassword">
+          <el-input v-model="resetPasswordForm.newPassword" type="password" :placeholder="$t('user.password')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="resetPasswordVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleResetPasswordSubmit">确定</el-button>
+        <el-button @click="resetPasswordVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleResetPasswordSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- 角色授权对话框 -->
-    <el-dialog v-model="authRoleVisible" title="角色授权" width="400px">
+    <el-dialog v-model="authRoleVisible" :title="$t('system.authRole')" width="400px">
       <el-form label-width="80px">
-        <el-form-item label="用户名">
+        <el-form-item :label="$t('user.username')">
           <el-input v-model="authRoleForm.username" disabled />
         </el-form-item>
-        <el-form-item label="角色">
+        <el-form-item :label="$t('system.selectRole')">
           <el-checkbox-group v-model="authRoleForm.roleIds">
             <el-checkbox v-for="role in roleList" :key="role.id" :label="role.id">
               {{ role.roleName }}
@@ -137,7 +137,7 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="authRoleVisible = false">取消</el-button>
+        <el-button @click="authRoleVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleAuthRoleSubmit">确定</el-button>
       </template>
     </el-dialog>
@@ -145,10 +145,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { userApi, roleApi } from '@/api/system'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const queryForm = reactive({
   username: '',

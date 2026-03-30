@@ -33,8 +33,8 @@ public class Knife4jConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("JavaWeb管理系统接口文档")
-                .description("JavaWeb管理系统API文档")
+                .title("JavaWeb接口文档")
+                .description("JavaWeb API文档")
                 .contact(new Contact("iFlow CLI", "", ""))
                 .version("1.0.0")
                 .build();

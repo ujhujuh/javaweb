@@ -3,51 +3,51 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>售卖分类管理</span>
-          <el-button type="primary" @click="handleAdd">新增分类</el-button>
+          <span>{{ $t('sale.saleCategoryManagement') }}</span>
+          <el-button type="primary" @click="handleAdd">{{ $t('sale.addCategory') }}</el-button>
         </div>
       </template>
 
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="categoryName" label="分类名称" min-width="220" />
-        <el-table-column prop="parentId" label="父级ID" width="100" />
-        <el-table-column prop="sortNum" label="排序" width="100" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="categoryName" :label="$t('sale.categoryName')" min-width="220" />
+        <el-table-column prop="parentId" :label="$t('sale.parentId')" width="100" />
+        <el-table-column prop="sortNum" :label="$t('news.sortNum')" width="100" />
+        <el-table-column prop="status" :label="$t('news.status')" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === '0' ? 'success' : 'danger'">{{ row.status === '0' ? '正常' : '禁用' }}</el-tag>
+            <el-tag :type="row.status === '0' ? 'success' : 'danger'">{{ row.status === '0' ? $t('common.normal') : $t('common.disabled') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column :label="$t('common.operation')" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
-        <el-form-item label="分类名称" prop="categoryName">
+      <el-form :model="form" :rules="rules" ref="formRef" :label-width="$t('common.labelWidth')">
+        <el-form-item :label="$t('sale.categoryName')" prop="categoryName">
           <el-input v-model="form.categoryName" />
         </el-form-item>
-        <el-form-item label="父级ID" prop="parentId">
+        <el-form-item :label="$t('sale.parentId')" prop="parentId">
           <el-input-number v-model="form.parentId" :min="0" />
         </el-form-item>
-        <el-form-item label="排序" prop="sortNum">
+        <el-form-item :label="$t('news.sortNum')" prop="sortNum">
           <el-input-number v-model="form.sortNum" :min="0" />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item :label="$t('news.status')">
           <el-radio-group v-model="form.status">
-            <el-radio label="0">正常</el-radio>
-            <el-radio label="1">禁用</el-radio>
+            <el-radio label="0">{{ $t('common.normal') }}</el-radio>
+            <el-radio label="1">{{ $t('common.disabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>

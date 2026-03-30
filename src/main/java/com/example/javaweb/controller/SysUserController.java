@@ -99,6 +99,13 @@ public class SysUserController {
         return Result.success();
     }
 
+    @ApiLog("更新用户语言偏好")
+    @PutMapping("/language")
+    public Result<Void> updateLanguage(@RequestBody SysUser user) {
+        sysUserService.updateUserLanguage(user.getId(), user.getLanguage());
+        return Result.success();
+    }
+
     @ApiLog("导出用户")
     @RequiresPermissions("system:user:export")
     @PostMapping("/export")

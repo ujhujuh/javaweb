@@ -3,23 +3,23 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>菜单管理</span>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
+          <span>{{ $t('system.menuManagement') }}</span>
+          <el-button type="primary" @click="handleAdd">{{ $t('common.add') }}</el-button>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="菜单名称">
-          <el-input v-model="queryForm.menuName" placeholder="请输入菜单名称" clearable style="width: 200px" />
+        <el-form-item :label="$t('menu.menuName')" :label-width="isEnglish ? '120px' : 'auto'">
+          <el-input v-model="queryForm.menuName" :placeholder="$t('common.query')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="正常" value="0" />
-            <el-option label="停用" value="1" />
+        <el-form-item :label="$t('menu.status')" :label-width="isEnglish ? '100px' : 'auto'">
+          <el-select v-model="queryForm.status" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('user.statusNormal')" value="0" />
+            <el-option :label="$t('user.statusDisabled')" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -31,41 +31,41 @@
         v-loading="loading"
         default-expand-all
       >
-        <el-table-column prop="menuName" label="菜单名称" min-width="180" />
-        <el-table-column prop="icon" label="图标" width="80">
+        <el-table-column prop="menuName" :label="$t('menu.menuName')" min-width="180" />
+        <el-table-column prop="icon" :label="$t('menu.icon')" width="80">
           <template #default="{ row }">
             <el-icon v-if="row.icon && row.icon !== '#'"><component :is="row.icon" /></el-icon>
           </template>
         </el-table-column>
-        <el-table-column prop="menuType" label="类型" width="100">
+        <el-table-column prop="menuType" :label="$t('menu.menuType')" width="100">
           <template #default="{ row }">
-            <el-tag v-if="row.menuType === 'M'" type="primary">目录</el-tag>
-            <el-tag v-else-if="row.menuType === 'C'" type="success">菜单</el-tag>
-            <el-tag v-else-if="row.menuType === 'F'" type="info">按钮</el-tag>
+            <el-tag v-if="row.menuType === 'M'" type="primary">{{ $t('menu.menuTypeDirectory') }}</el-tag>
+            <el-tag v-else-if="row.menuType === 'C'" type="success">{{ $t('menu.menuTypeMenu') }}</el-tag>
+            <el-tag v-else-if="row.menuType === 'F'" type="info">{{ $t('menu.menuTypeButton') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="orderNum" label="排序" width="80" />
-        <el-table-column prop="perms" label="权限标识" min-width="120" />
-        <el-table-column prop="path" label="路由路径" min-width="150" />
-        <el-table-column prop="component" label="组件路径" min-width="150" />
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="orderNum" :label="$t('menu.sort')" width="80" />
+        <el-table-column prop="perms" :label="$t('menu.perms')" min-width="120" />
+        <el-table-column prop="path" :label="$t('menu.path')" min-width="150" />
+        <el-table-column prop="component" :label="$t('menu.component')" min-width="150" />
+        <el-table-column prop="status" :label="$t('menu.status')" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
-              {{ row.status === '0' ? '正常' : '停用' }}
+              {{ row.status === '0' ? $t('user.statusNormal') : $t('user.statusDisabled') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column :label="$t('common.operation')" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
             <el-dropdown @command="(command) => handleCommandAction(command, row)">
               <el-button size="small" type="primary" style="margin-left: 8px;">
-                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{ $t('common.more') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="add" v-if="row.menuType !== 'F'">新增子菜单</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                  <el-dropdown-item command="add" v-if="row.menuType !== 'F'">{{ $t('menu.addSubMenu') }}</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">{{ $t('common.delete') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -76,116 +76,127 @@
 
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
+      <el-form :model="form" :rules="rules" ref="formRef" :label-width="$t('common.labelWidth')">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="上级菜单">
+            <el-form-item :label="$t('menu.parentMenu')">
               <el-tree-select
                 v-model="form.parentId"
                 :data="menuTree"
                 :props="{ label: 'menuName', value: 'id' }"
-                placeholder="请选择上级菜单"
+                :placeholder="$t('menu.selectParentMenu')"
                 check-strictly
                 clearable
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="菜单类型" prop="menuType">
+            <el-form-item :label="$t('menu.menuType')" prop="menuType">
               <el-radio-group v-model="form.menuType">
-                <el-radio label="M">目录</el-radio>
-                <el-radio label="C">菜单</el-radio>
-                <el-radio label="F">按钮</el-radio>
+                <el-radio label="M">{{ $t('menu.menuTypeDirectory') }}</el-radio>
+                <el-radio label="C">{{ $t('menu.menuTypeMenu') }}</el-radio>
+                <el-radio label="F">{{ $t('menu.menuTypeButton') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+            <el-form-item :label="$t('menu.menuName')" prop="menuName">
+              <el-input v-model="form.menuName" :placeholder="$t('menu.menuName')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
+            <el-form-item :label="$t('menu.menuNameEn')">
+              <el-input v-model="form.menuNameEn" :placeholder="$t('menu.menuNameEn')" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label="$t('menu.sort')" prop="orderNum">
               <el-input-number v-model="form.orderNum" :min="0" controls-position="right" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row v-if="form.menuType !== 'F'">
           <el-col :span="12">
-            <el-form-item label="路由地址" prop="path">
-              <el-input v-model="form.path" placeholder="请输入路由地址" />
+            <el-form-item :label="$t('menu.path')" prop="path">
+              <el-input v-model="form.path" :placeholder="$t('menu.path')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="组件路径" prop="component">
-              <el-input v-model="form.component" placeholder="请输入组件路径" />
+            <el-form-item :label="$t('menu.component')" prop="component">
+              <el-input v-model="form.component" :placeholder="$t('menu.component')" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row v-if="form.menuType === 'C'">
           <el-col :span="12">
-            <el-form-item label="是否外链">
+            <el-form-item :label="$t('menu.isFrame')">
               <el-radio-group v-model="form.isFrame">
-                <el-radio label="0">否</el-radio>
-                <el-radio label="1">是</el-radio>
+                <el-radio label="0">{{ $t('common.no') }}</el-radio>
+                <el-radio label="1">{{ $t('common.yes') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="缓存">
+            <el-form-item :label="$t('menu.isCache')">
               <el-radio-group v-model="form.isCache">
-                <el-radio label="0">缓存</el-radio>
-                <el-radio label="1">不缓存</el-radio>
+                <el-radio label="0">{{ $t('menu.cache') }}</el-radio>
+                <el-radio label="1">{{ $t('menu.noCache') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="菜单图标" prop="icon">
-              <el-input v-model="form.icon" placeholder="请输入图标" />
+            <el-form-item :label="$t('menu.icon')" prop="icon">
+              <el-input v-model="form.icon" :placeholder="$t('menu.icon')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="权限标识" prop="perms">
-              <el-input v-model="form.perms" placeholder="请输入权限标识" />
+            <el-form-item :label="$t('menu.perms')" prop="perms">
+              <el-input v-model="form.perms" :placeholder="$t('menu.perms')" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="显示状态">
+            <el-form-item :label="$t('menu.visible')">
               <el-radio-group v-model="form.visible">
-                <el-radio label="0">显示</el-radio>
-                <el-radio label="1">隐藏</el-radio>
+                <el-radio label="0">{{ $t('menu.show') }}</el-radio>
+                <el-radio label="1">{{ $t('menu.hide') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="菜单状态" prop="status">
+            <el-form-item :label="$t('menu.status')" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">停用</el-radio>
+                <el-radio label="0">{{ $t('common.normal') }}</el-radio>
+                <el-radio label="1">{{ $t('common.disabled') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { menuApi } from '@/api/system'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const queryForm = reactive({
   menuName: '',
@@ -203,6 +214,7 @@ const form = reactive({
   id: null,
   parentId: 0,
   menuName: '',
+  menuNameEn: '',
   menuType: 'M',
   orderNum: 0,
   path: '',
@@ -249,6 +261,7 @@ const handleAdd = (row) => {
     id: null,
     parentId: row ? row.id : 0,
     menuName: '',
+    menuNameEn: '',
     menuType: row && row.menuType === 'M' ? 'C' : 'M',
     orderNum: 0,
     path: '',

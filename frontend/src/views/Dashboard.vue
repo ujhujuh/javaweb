@@ -9,10 +9,10 @@
             </div>
             <div class="stat-content">
               <div class="stat-value" v-loading="userCountLoading">{{ userCount }}</div>
-              <div class="stat-label">用户总数</div>
+              <div class="stat-label">{{ $t('dashboard.userCount') }}</div>
               <div class="stat-trend">
                 <el-icon><TrendCharts /></el-icon>
-                <span>活跃用户</span>
+                <span>{{ $t('dashboard.activeUser') }}</span>
               </div>
             </div>
           </div>
@@ -26,7 +26,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value" v-loading="menuCountLoading">{{ menuCount }}</div>
-              <div class="stat-label">菜单总数</div>
+              <div class="stat-label">{{ $t('dashboard.menuCount') }}</div>
               <div class="stat-trend">
                 <el-icon><Operation /></el-icon>
                 <span>系统菜单</span>
@@ -43,10 +43,10 @@
             </div>
             <div class="stat-content">
               <div class="stat-value" v-loading="unreadCountLoading">{{ unreadCount }}</div>
-              <div class="stat-label">未读公告</div>
+              <div class="stat-label">{{ $t('dashboard.unreadNotice') }}</div>
               <div class="stat-trend">
                 <el-icon><ChatDotRound /></el-icon>
-                <span>待处理</span>
+                <span>{{ $t('dashboard.pending') }}</span>
               </div>
             </div>
           </div>
@@ -60,9 +60,9 @@
             <div class="tool-icon doc-icon">
               <el-icon :size="40"><Document /></el-icon>
             </div>
-            <h3 class="tool-title">接口文档</h3>
+            <h3 class="tool-title">{{ $t('dashboard.apiDoc') }}</h3>
           </div>
-          <p class="tool-desc">Knife4j 在线接口文档，查看和管理所有API接口</p>
+          <p class="tool-desc">{{ $t('dashboard.knife4jDesc') }}</p>
           <div class="tool-footer">
             <span class="tool-status">在线</span>
             <el-icon class="tool-arrow"><ArrowRight /></el-icon>
@@ -75,9 +75,9 @@
             <div class="tool-icon monitor-icon">
               <el-icon :size="40"><Monitor /></el-icon>
             </div>
-            <h3 class="tool-title">数据监控</h3>
+            <h3 class="tool-title">{{ $t('dashboard.dataMonitor') }}</h3>
           </div>
-          <p class="tool-desc">Druid 数据库连接池监控，查看SQL执行和数据库性能</p>
+          <p class="tool-desc">{{ $t('dashboard.druidDesc') }}</p>
           <div class="tool-footer">
             <span class="tool-status">在线</span>
             <el-icon class="tool-arrow"><ArrowRight /></el-icon>
@@ -93,7 +93,7 @@
               <el-icon :size="48"><House /></el-icon>
             </div>
             <div class="welcome-title-section">
-              <h1 class="welcome-title">欢迎使用JavaWeb管理系统</h1>
+              <h1 class="welcome-title">{{ $t('dashboard.welcome') }}</h1>
               <p class="welcome-subtitle">Enterprise Management System</p>
             </div>
           </div>
@@ -166,13 +166,13 @@
             <div class="notice-header-icon">
               <el-icon :size="24"><Bell /></el-icon>
             </div>
-            <h3 class="notice-card-title">最新公告</h3>
+            <h3 class="notice-card-title">{{ $t('dashboard.latestNotice') }}</h3>
             <el-badge :value="unreadCount" :hidden="unreadCount === 0" class="notice-badge">
               <span></span>
             </el-badge>
           </div>
           <div class="notice-card-body" v-loading="loading">
-            <el-empty v-if="sortedNotices.length === 0" description="暂无公告" />
+            <el-empty v-if="sortedNotices.length === 0" :description="$t('dashboard.noNotice')" />
             <div v-else class="notice-list">
               <div v-for="notice in sortedNotices" :key="notice.id"
                    class="notice-item"
@@ -204,31 +204,30 @@
           <div class="notice-detail-type" :class="`type-${viewNoticeData.noticeType}`">
             <el-icon v-if="viewNoticeData.noticeType === '1'" :size="24"><ChatDotRound /></el-icon>
             <el-icon v-else-if="viewNoticeData.noticeType === '2'" :size="24"><Document /></el-icon>
-            <span class="notice-type-text">{{ viewNoticeData.noticeType === '1' ? '通知' : '公告' }}</span>
+            <span class="notice-type-text">{{ viewNoticeData.noticeType === '1' ? $t('dashboard.noticeTypeNotice') : $t('dashboard.noticeTypeAnnouncement') }}</span>
           </div>
           <div class="notice-detail-title">{{ viewNoticeData.noticeTitle }}</div>
         </div>
       </template>
       <div class="notice-detail-body">
         <div class="notice-detail-meta">
-          <div class="meta-item">
-            <el-icon class="meta-icon"><User /></el-icon>
-            <span class="meta-label">创建者：</span>
-            <span class="meta-value">{{ viewNoticeData.createBy }}</span>
-          </div>
-          <div class="meta-item">
-            <el-icon class="meta-icon"><Clock /></el-icon>
-            <span class="meta-label">创建时间：</span>
-            <span class="meta-value">{{ viewNoticeData.createTime }}</span>
-          </div>
-        </div>
-        <div class="notice-divider"></div>
+                    <div class="meta-item">
+                      <el-icon class="meta-icon"><User /></el-icon>
+                      <span class="meta-label">{{ $t('dashboard.creator') }}：</span>
+                      <span class="meta-value">{{ viewNoticeData.createBy }}</span>
+                    </div>
+                    <div class="meta-item">
+                      <el-icon class="meta-icon"><Clock /></el-icon>
+                      <span class="meta-label">{{ $t('dashboard.createTime') }}：</span>
+                      <span class="meta-value">{{ viewNoticeData.createTime }}</span>
+                    </div>
+                  </div>        <div class="notice-divider"></div>
         <div class="notice-detail-content">
           <div class="content-wrapper" v-html="viewNoticeData.noticeContent"></div>
         </div>
       </div>
       <template #footer>
-        <el-button @click="noticeVisible = false">关闭</el-button>
+        <el-button @click="noticeVisible = false">{{ $t('dashboard.close') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -236,6 +235,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { noticeApi, userApi, menuApi } from '@/api/system'
 import { useUserStore } from '@/store/user'
 import {
@@ -255,6 +255,7 @@ import {
   Clock
 } from '@element-plus/icons-vue'
 
+const { t } = useI18n()
 const userStore = useUserStore()
 const loading = ref(false)
 const notices = ref([])
@@ -267,35 +268,15 @@ const menuCount = ref(0)
 const menuCountLoading = ref(false)
 const unreadCountLoading = ref(false)
 const unreadCount = computed(() => {
-  // 从公告列表中统计未读公告
-  if (!notices.value || !Array.isArray(notices.value)) {
-    console.log('公告列表为空，未读数量为 0')
-    return 0
-  }
-
-  // 如果用户公告状态为空，则认为所有公告都是未读的
-  if (!unreadNoticeStatus.value || !Array.isArray(unreadNoticeStatus.value) || unreadNoticeStatus.value.length === 0) {
-    console.log('用户公告状态为空，所有公告都认为未读，未读数量:', notices.value.length)
-    return notices.value.length
-  }
-
-  // 否则根据用户公告状态统计未读公告
-  const count = notices.value.filter(notice => isNoticeUnread(notice.id)).length
-  console.log('未读公告数量计算:', count, '公告总数:', notices.value.length, '用户状态总数:', unreadNoticeStatus.value.length)
-  return count
+  if (!notices.value?.length) return 0
+  if (!unreadNoticeStatus.value?.length) return notices.value.length
+  return notices.value.filter(notice => isNoticeUnread(notice.id)).length
 })
 
 // 判断是否是超级管理员
 const isAdmin = computed(() => {
   const userInfo = userStore.userInfo
-  console.log('判断管理员 - 用户信息:', userInfo)
-  if (!userInfo) {
-    console.log('用户信息为空，不是管理员')
-    return false
-  }
-  const result = userInfo.username === 'admin'
-  console.log('判断管理员结果:', result, '用户名:', userInfo.username)
-  return result
+  return userInfo?.username === 'admin'
 })
 
 // 排序后的公告列表，未读的在前面
@@ -311,57 +292,25 @@ const sortedNotices = computed(() => {
 
 const isNoticeUnread = (noticeId) => {
   if (!unreadNoticeStatus.value || !Array.isArray(unreadNoticeStatus.value)) {
-    console.log('用户公告状态未初始化，默认认为所有公告未读')
     return true
   }
 
   const status = unreadNoticeStatus.value.find(s => s.noticeId === noticeId)
-
-  // 如果找不到对应的用户公告状态，认为该公告未读
-  if (!status) {
-    console.log('公告', noticeId, '未找到用户状态，认为未读')
-    return true
-  }
-
-  // 如果找到状态且 readStatus 为 '0'，则认为未读
-  const result = status.readStatus === '0'
-
-  console.log('检查公告未读状态:', {
-    noticeId,
-    readStatus: status.readStatus,
-    isUnread: result
-  })
-
-  return result
+  return !status || status.readStatus === '0'
 }
 
 const loadNotices = async () => {
   loading.value = true
   try {
-    console.log('开始加载最新公告...')
     const res = await noticeApi.latest()
-    console.log('公告API返回结果:', res)
     if (res.code === 200) {
-      // 处理数据格式
-      if (Array.isArray(res.data)) {
-        notices.value = res.data
-        console.log('公告列表（数组）:', notices.value)
-      } else if (res.data && res.data.records && Array.isArray(res.data.records)) {
-        notices.value = res.data.records
-        console.log('公告列表（分页）:', notices.value)
-      } else if (res.data && res.data.list && Array.isArray(res.data.list)) {
-        notices.value = res.data.list
-        console.log('公告列表（list）:', notices.value)
-      } else {
-        console.warn('未知的公告数据格式:', res.data)
-        notices.value = []
-      }
+      notices.value = Array.isArray(res.data) ? res.data :
+                      res.data?.records || res.data?.list || []
     } else {
-      console.error('公告API返回错误:', res)
       notices.value = []
     }
   } catch (error) {
-    console.error('加载公告失败', error)
+    console.error(t('dashboard.loadNoticesFailed'), error)
     notices.value = []
   } finally {
     loading.value = false
@@ -371,30 +320,15 @@ const loadNotices = async () => {
 const loadUserNoticeStatus = async () => {
   unreadCountLoading.value = true
   try {
-    console.log('开始加载用户公告状态...')
     const res = await noticeApi.userStatus()
-    console.log('用户公告状态API返回结果:', res)
     if (res.code === 200) {
-      // 处理数据格式
-      if (Array.isArray(res.data)) {
-        unreadNoticeStatus.value = res.data
-        console.log('用户公告状态（数组）:', unreadNoticeStatus.value)
-      } else if (res.data && res.data.records && Array.isArray(res.data.records)) {
-        unreadNoticeStatus.value = res.data.records
-        console.log('用户公告状态（分页）:', unreadNoticeStatus.value)
-      } else if (res.data && res.data.list && Array.isArray(res.data.list)) {
-        unreadNoticeStatus.value = res.data.list
-        console.log('用户公告状态（list）:', unreadNoticeStatus.value)
-      } else {
-        console.warn('未知的用户公告状态数据格式:', res.data)
-        unreadNoticeStatus.value = []
-      }
+      unreadNoticeStatus.value = Array.isArray(res.data) ? res.data :
+                                 res.data?.records || res.data?.list || []
     } else {
-      console.error('用户公告状态API返回错误:', res)
       unreadNoticeStatus.value = []
     }
   } catch (error) {
-    console.error('加载用户公告状态失败', error)
+    console.error(t('dashboard.loadUserStatusFailed'), error)
     unreadNoticeStatus.value = []
   } finally {
     unreadCountLoading.value = false
@@ -408,31 +342,24 @@ const markNoticeAsRead = async (noticeId) => {
     if (status) {
       status.readStatus = '1'
     } else {
-      unreadNoticeStatus.value.push({
-        noticeId: noticeId,
-        readStatus: '1'
-      })
+      unreadNoticeStatus.value.push({ noticeId, readStatus: '1' })
     }
   } catch (error) {
-    console.error('标记公告已读失败', error)
+    console.error(t('dashboard.markAsReadFailed'), error)
   }
 }
 
 const loadUserCount = async () => {
   userCountLoading.value = true
   try {
-    console.log('开始加载用户总数...')
     const res = await userApi.list({ current: 1, size: 1 })
-    console.log('用户API返回结果:', res)
     if (res.code === 200) {
-      userCount.value = res.data.total
-      console.log('用户总数:', userCount.value)
+      userCount.value = res.data.total || 0
     } else {
-      console.error('用户API返回错误:', res)
       userCount.value = 0
     }
   } catch (error) {
-    console.error('加载用户总数失败', error)
+    console.error(t('dashboard.loadUserCountFailed'), error)
     userCount.value = 0
   } finally {
     userCountLoading.value = false
@@ -442,31 +369,14 @@ const loadUserCount = async () => {
 const loadMenuCount = async () => {
   menuCountLoading.value = true
   try {
-    console.log('开始加载菜单列表...')
     const res = await menuApi.list()
-    console.log('菜单API返回结果:', res)
     if (res.code === 200) {
-      console.log('菜单数据:', res.data)
-      // 如果返回的是分页数据
-      if (res.data && res.data.total !== undefined) {
-        menuCount.value = res.data.total
-        console.log('菜单总数（分页）:', menuCount.value)
-      }
-      // 如果返回的是列表数据
-      else if (Array.isArray(res.data)) {
-        menuCount.value = res.data.length
-        console.log('菜单总数（列表）:', menuCount.value)
-      }
-      else {
-        console.log('未知的数据格式:', res.data)
-        menuCount.value = 0
-      }
+      menuCount.value = res.data?.total ?? (Array.isArray(res.data) ? res.data.length : 0)
     } else {
-      console.error('菜单API返回错误:', res)
       menuCount.value = 0
     }
   } catch (error) {
-    console.error('加载菜单总数失败', error)
+    console.error(t('dashboard.loadMenuCountFailed'), error)
     menuCount.value = 0
   } finally {
     menuCountLoading.value = false
@@ -490,27 +400,13 @@ const openDruid = () => {
 }
 
 onMounted(async () => {
-  console.log('Dashboard 组件已挂载')
-  console.log('当前用户:', userStore.userInfo)
-  console.log('是否为管理员:', isAdmin.value)
-
-  // 先加载公告列表
   await loadNotices()
-  // 再加载用户公告状态
   await loadUserNoticeStatus()
 
   if (isAdmin.value) {
     loadUserCount()
     loadMenuCount()
   }
-
-  // 打印最终统计结果
-  console.log('=== 最终统计结果 ===')
-  console.log('用户总数:', userCount.value)
-  console.log('菜单总数:', menuCount.value)
-  console.log('未读公告数量:', unreadCount.value)
-  console.log('公告列表:', notices.value)
-  console.log('用户公告状态:', unreadNoticeStatus.value)
 })
 </script>
 

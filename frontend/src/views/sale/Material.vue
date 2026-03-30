@@ -3,52 +3,52 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>售卖资源管理</span>
-          <el-button type="primary" @click="handleAdd">新增资源</el-button>
+          <span>{{ $t('sale.saleMaterialManagement') }}</span>
+          <el-button type="primary" @click="handleAdd">{{ $t('sale.addMaterial') }}</el-button>
         </div>
       </template>
 
       <el-form :model="queryForm" inline>
-        <el-form-item label="关键词">
-          <el-input v-model="queryForm.keyword" placeholder="标题/简介" clearable style="width: 220px" />
+        <el-form-item :label="$t('common.query')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-input v-model="queryForm.keyword" :placeholder="$t('news.newsTitle')" clearable style="width: 220px" />
         </el-form-item>
-        <el-form-item label="分类">
-          <el-select v-model="queryForm.categoryId" clearable placeholder="全部分类" style="width: 180px">
+        <el-form-item :label="$t('sale.materialCategory')" :label-width="isEnglish ? '130px' : 'auto'">
+          <el-select v-model="queryForm.categoryId" clearable :placeholder="$t('common.query')" style="width: 180px">
             <el-option v-for="item in categoryOptions" :key="item.id" :label="item.categoryName" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" clearable placeholder="全部状态" style="width: 140px">
-            <el-option label="草稿" value="0" />
-            <el-option label="上架" value="1" />
-            <el-option label="下架" value="2" />
+        <el-form-item :label="$t('news.status')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-select v-model="queryForm.status" clearable :placeholder="$t('common.query')" style="width: 140px">
+            <el-option :label="$t('news.draft')" value="0" />
+            <el-option :label="$t('sale.published')" value="1" />
+            <el-option :label="$t('sale.cancelled')" value="2" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
       <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="title" label="资料标题" min-width="220" show-overflow-tooltip />
-        <el-table-column prop="categoryId" label="分类" width="140">
+        <el-table-column prop="title" :label="$t('sale.materialTitle')" min-width="220" show-overflow-tooltip />
+        <el-table-column prop="categoryId" :label="$t('sale.materialCategory')" width="140">
           <template #default="{ row }">{{ getCategoryName(row.categoryId) }}</template>
         </el-table-column>
-        <el-table-column prop="price" label="价格" width="110" />
-        <el-table-column prop="salesCount" label="销量" width="90" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="price" :label="$t('sale.materialPrice')" width="110" />
+        <el-table-column prop="salesCount" :label="$t('sale.salesCount')" width="90" />
+        <el-table-column prop="status" :label="$t('news.status')" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === '1' ? 'success' : row.status === '0' ? 'info' : 'danger'">
-              {{ row.status === '1' ? '上架' : row.status === '0' ? '草稿' : '下架' }}
+              {{ row.status === '1' ? $t('news.published') : row.status === '0' ? $t('news.draft') : $t('sale.cancelled') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="publishTime" label="发布时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column prop="publishTime" :label="$t('news.publishTime')" width="180" />
+        <el-table-column :label="$t('common.operation')" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,93 +66,97 @@
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="860px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="95px">
+      <el-form :model="form" :rules="rules" ref="formRef" :label-width="$t('common.labelWidth')">
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="资料标题" prop="title">
+            <el-form-item :label="$t('sale.materialTitle')" prop="title">
               <el-input v-model="form.title" maxlength="200" show-word-limit />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="分类" prop="categoryId">
-              <el-select v-model="form.categoryId" clearable placeholder="选择分类" style="width: 100%">
+            <el-form-item :label="$t('sale.materialCategory')" prop="categoryId">
+              <el-select v-model="form.categoryId" clearable :placeholder="$t('news.selectCategory')" style="width: 100%">
                 <el-option v-for="item in categoryOptions" :key="item.id" :label="item.categoryName" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="资料简介">
+        <el-form-item :label="$t('sale.materialSummary')">
           <el-input v-model="form.summary" type="textarea" :rows="2" maxlength="1000" show-word-limit />
         </el-form-item>
-        <el-form-item label="详情" prop="detailContent">
+        <el-form-item :label="$t('sale.materialDetail')" prop="detailContent">
           <el-input v-model="form.detailContent" type="textarea" :rows="4" />
         </el-form-item>
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="封面图">
-              <el-input v-model="form.coverImage" placeholder="请输入封面URL" />
+            <el-form-item :label="$t('sale.coverImage')">
+              <el-input v-model="form.coverImage" :placeholder="$t('sale.coverUrl')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="试看地址">
-              <el-input v-model="form.previewUrl" placeholder="请输入试看URL" />
+            <el-form-item :label="$t('sale.previewUrl')">
+              <el-input v-model="form.previewUrl" :placeholder="$t('sale.previewUrl')" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="文件地址" prop="fileUrl">
-              <el-input v-model="form.fileUrl" placeholder="请输入文件URL" />
+            <el-form-item :label="$t('sale.fileUrl')" prop="fileUrl">
+              <el-input v-model="form.fileUrl" :placeholder="$t('sale.fileUrl')" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="格式">
+            <el-form-item :label="$t('sale.fileFormat')">
               <el-input v-model="form.fileFormat" placeholder="pdf/zip" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="大小">
+            <el-form-item :label="$t('sale.fileSize')">
               <el-input v-model="form.fileSize" placeholder="20MB" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="8">
-            <el-form-item label="价格" prop="price">
+            <el-form-item :label="$t('sale.materialPrice')" prop="price">
               <el-input-number v-model="form.price" :min="0" :precision="2" :step="1" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="下载次数" prop="maxDownloadCount">
+            <el-form-item :label="$t('sale.downloadCount')" prop="maxDownloadCount">
               <el-input-number v-model="form.maxDownloadCount" :min="1" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="状态">
+            <el-form-item :label="$t('news.status')">
               <el-radio-group v-model="form.status">
-                <el-radio value="0">草稿</el-radio>
-                <el-radio value="1">上架</el-radio>
-                <el-radio value="2">下架</el-radio>
+                <el-radio value="0">{{ $t('news.draft') }}</el-radio>
+                <el-radio value="1">{{ $t('news.published') }}</el-radio>
+                <el-radio value="2">{{ $t('sale.cancelled') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="标签">
-          <el-input v-model="form.tags" placeholder="多个标签逗号分隔" />
+        <el-form-item :label="$t('sale.tags')">
+          <el-input v-model="form.tags" :placeholder="$t('sale.tagsPlaceholder')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { saleManageApi } from '@/api/system'
+
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const loading = ref(false)
 const tableData = ref([])

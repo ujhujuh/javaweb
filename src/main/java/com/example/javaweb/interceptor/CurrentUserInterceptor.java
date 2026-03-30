@@ -24,6 +24,19 @@ public class CurrentUserInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         CurrentUserContext.clear();
+
+        // 解析 Accept-Language 请求头
+        String acceptLanguage = request.getHeader("Accept-Language");
+        if (acceptLanguage != null && !acceptLanguage.trim().isEmpty()) {
+            // 提取语言代码（例如：en-US -> en, zh-CN -> zh）
+            String language = acceptLanguage.trim().toLowerCase();
+            if (language.startsWith("en")) {
+                CurrentUserContext.setLanguage("en");
+            } else {
+                CurrentUserContext.setLanguage("zh");
+            }
+        }
+
         String token = request.getHeader("Authorization");
         if (token == null || token.trim().isEmpty()) {
             return true;

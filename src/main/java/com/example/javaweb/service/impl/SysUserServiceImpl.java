@@ -117,4 +117,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .orderByAsc(SysUser::getId);
         return sysUserMapper.selectList(wrapper);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateUserLanguage(Long userId, String language) {
+        SysUser user = new SysUser();
+        user.setId(userId);
+        user.setLanguage(language);
+        return sysUserMapper.updateById(user) > 0;
+    }
 }

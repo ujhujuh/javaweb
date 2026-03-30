@@ -27,4 +27,6 @@ public interface SysUserService extends IService<SysUser> {
     List<SysUser> selectUsersByRoleIds(List<Long> roleIds);
 
     List<SysUser> exportUserList(SysUser user);
+
+    boolean updateUserLanguage(Long userId, String language);
 }

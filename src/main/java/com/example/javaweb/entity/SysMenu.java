@@ -18,6 +18,10 @@ public class SysMenu implements Serializable {
 
     private String menuName;
 
+    private String menuNameEn;
+
+    private String menuNameZh;
+
     private Long parentId;
 
     private Integer orderNum;

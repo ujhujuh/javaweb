@@ -3,55 +3,55 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>角色管理</span>
+          <span>{{ $t('system.roleManagement') }}</span>
           <div>
-            <el-button type="success" @click="handleExport">导出</el-button>
-            <el-button type="primary" @click="handleAdd">新增</el-button>
+            <el-button type="success" @click="handleExport">{{ $t('common.export') }}</el-button>
+            <el-button type="primary" @click="handleAdd">{{ $t('common.add') }}</el-button>
           </div>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="角色名称">
-          <el-input v-model="queryForm.roleName" placeholder="请输入角色名称" clearable />
+        <el-form-item :label="$t('role.roleName')" :label-width="isEnglish ? '90px' : 'auto'">
+          <el-input v-model="queryForm.roleName" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="角色编码">
-          <el-input v-model="queryForm.roleKey" placeholder="请输入角色编码" clearable />
+        <el-form-item :label="$t('role.roleKey')" :label-width="isEnglish ? '90px' : 'auto'">
+          <el-input v-model="queryForm.roleKey" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="正常" value="0" />
-            <el-option label="停用" value="1" />
+        <el-form-item :label="$t('user.status')" :label-width="isEnglish ? '60px' : 'auto'">
+          <el-select v-model="queryForm.status" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('user.statusNormal')" value="0" />
+            <el-option :label="$t('user.statusDisabled')" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="roleName" label="角色名称" />
-        <el-table-column prop="roleKey" label="角色编码" />
-        <el-table-column prop="roleSort" label="显示顺序" />
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="roleName" :label="$t('role.roleName')" />
+        <el-table-column prop="roleKey" :label="$t('role.roleKey')" />
+        <el-table-column prop="roleSort" :label="$t('role.roleSort')" />
+        <el-table-column prop="status" :label="$t('user.status')">
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
-              {{ row.status === '0' ? '正常' : '停用' }}
+              {{ row.status === '0' ? $t('user.statusNormal') : $t('user.statusDisabled') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column prop="createTime" :label="$t('user.createTime')" />
+        <el-table-column :label="$t('common.operation')" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
             <el-dropdown @command="(command) => handleCommandAction(command, row)">
               <el-button size="small" type="primary" style="margin-left: 8px;">
-                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{ $t('common.more') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="authMenu">菜单授权</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                  <el-dropdown-item command="authMenu">{{ $t('role.authMenu') }}</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">{{ $t('common.delete') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -73,38 +73,38 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名称" />
+        <el-form-item :label="$t('role.roleName')" prop="roleName">
+          <el-input v-model="form.roleName" :placeholder="$t('role.roleName')" />
         </el-form-item>
-        <el-form-item label="角色编码" prop="roleKey">
-          <el-input v-model="form.roleKey" placeholder="请输入角色编码" />
+        <el-form-item :label="$t('role.roleKey')" prop="roleKey">
+          <el-input v-model="form.roleKey" :placeholder="$t('role.roleKey')" />
         </el-form-item>
-        <el-form-item label="显示顺序" prop="roleSort">
+        <el-form-item :label="$t('role.roleSort')" prop="roleSort">
           <el-input-number v-model="form.roleSort" :min="0" controls-position="right" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item :label="$t('user.status')" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio label="0">正常</el-radio>
-            <el-radio label="1">停用</el-radio>
+            <el-radio label="0">{{ $t('user.statusNormal') }}</el-radio>
+            <el-radio label="1">{{ $t('user.statusDisabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
+        <el-form-item :label="$t('config.remark')">
+          <el-input v-model="form.remark" type="textarea" :placeholder="$t('config.remark')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- 菜单授权对话框 -->
-    <el-dialog v-model="authMenuVisible" title="菜单授权" width="500px">
+    <el-dialog v-model="authMenuVisible" :title="$t('role.authMenu')" width="500px">
       <el-form label-width="80px">
-        <el-form-item label="角色名称">
+        <el-form-item :label="$t('role.roleName')">
           <el-input v-model="authMenuForm.roleName" disabled />
         </el-form-item>
-        <el-form-item label="菜单权限">
+        <el-form-item :label="$t('role.selectMenu')">
           <el-tree
             ref="menuTreeRef"
             :data="menuTree"
@@ -125,10 +125,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, nextTick, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { roleApi, menuApi } from '@/api/system'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const queryForm = reactive({
   roleName: '',

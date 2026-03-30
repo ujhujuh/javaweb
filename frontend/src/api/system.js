@@ -81,6 +81,15 @@ export const userApi = {
       data,
       responseType: 'blob'
     })
+  },
+
+  // 更新用户语言偏好
+  updateLanguage(data) {
+    return request({
+      url: '/system/user/language',
+      method: 'put',
+      data
+    })
   }
 }
 

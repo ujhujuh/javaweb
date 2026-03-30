@@ -3,52 +3,52 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>字典管理</span>
-          <el-button type="primary" @click="handleAddType">新增字典类型</el-button>
+          <span>{{ $t('system.dictManagement') }}</span>
+          <el-button type="primary" @click="handleAddType">{{ $t('dict.addDictType') }}</el-button>
         </div>
       </template>
       <el-form :model="queryForm" inline>
-        <el-form-item label="字典名称">
-          <el-input v-model="queryForm.dictName" placeholder="请输入字典名称" clearable />
+        <el-form-item :label="$t('dict.dictName')">
+          <el-input v-model="queryForm.dictName" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="字典类型">
-          <el-input v-model="queryForm.dictType" placeholder="请输入字典类型" clearable />
+        <el-form-item :label="$t('dict.dictType')">
+          <el-input v-model="queryForm.dictType" :placeholder="$t('common.query')" clearable />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="正常" value="0" />
-            <el-option label="停用" value="1" />
+        <el-form-item :label="$t('user.status')">
+          <el-select v-model="queryForm.status" :placeholder="$t('common.query')" clearable style="width: 150px">
+            <el-option :label="$t('user.statusNormal')" value="0" />
+            <el-option :label="$t('user.statusDisabled')" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleQuery">{{ $t('common.query') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" border stripe v-loading="loading">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="dictName" label="字典名称" />
-        <el-table-column prop="dictType" label="字典类型" />
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="dictName" :label="$t('dict.dictName')" />
+        <el-table-column prop="dictType" :label="$t('dict.dictType')" />
+        <el-table-column prop="status" :label="$t('user.status')">
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
-              {{ row.status === '0' ? '正常' : '停用' }}
+              {{ row.status === '0' ? $t('user.statusNormal') : $t('user.statusDisabled') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column prop="remark" :label="$t('dict.remark')" />
+        <el-table-column prop="createTime" :label="$t('user.createTime')" />
+        <el-table-column :label="$t('common.operation')" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEditType(row)">编辑</el-button>
+            <el-button size="small" @click="handleEditType(row)">{{ $t('common.edit') }}</el-button>
             <el-dropdown @command="(command) => handleCommandAction(command, row)">
               <el-button size="small" type="primary" style="margin-left: 8px;">
-                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{ $t('common.more') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="viewData">字典配置</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">删除</el-dropdown-item>
+                  <el-dropdown-item command="viewData">{{ $t('dict.viewData') }}</el-dropdown-item>
+                  <el-dropdown-item command="delete" divided style="color: #f56c6c;">{{ $t('common.delete') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -70,25 +70,25 @@
     <!-- 字典类型新增/编辑对话框 -->
     <el-dialog v-model="typeDialogVisible" :title="typeDialogTitle" width="500px">
       <el-form :model="typeForm" :rules="typeRules" ref="typeFormRef" label-width="90px">
-        <el-form-item label="字典名称" prop="dictName">
-          <el-input v-model="typeForm.dictName" placeholder="请输入字典名称" />
+        <el-form-item :label="$t('dict.dictName')" prop="dictName">
+          <el-input v-model="typeForm.dictName" :placeholder="$t('dict.dictName')" />
         </el-form-item>
-        <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="typeForm.dictType" placeholder="请输入字典类型" :disabled="!!typeForm.id" />
+        <el-form-item :label="$t('dict.dictType')" prop="dictType">
+          <el-input v-model="typeForm.dictType" :placeholder="$t('dict.dictType')" :disabled="!!typeForm.id" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item :label="$t('user.status')" prop="status">
           <el-radio-group v-model="typeForm.status">
-            <el-radio label="0">正常</el-radio>
-            <el-radio label="1">停用</el-radio>
+            <el-radio label="0">{{ $t('user.statusNormal') }}</el-radio>
+            <el-radio label="1">{{ $t('user.statusDisabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="typeForm.remark" type="textarea" placeholder="请输入备注" />
+        <el-form-item :label="$t('config.remark')">
+          <el-input v-model="typeForm.remark" type="textarea" :placeholder="$t('config.remark')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="typeDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmitType">确定</el-button>
+        <el-button @click="typeDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmitType">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
@@ -149,16 +149,16 @@
           <el-input v-model="dataForm.dictType" disabled />
         </el-form-item>
         <el-form-item label="字典标签" prop="dictLabel">
-          <el-input v-model="dataForm.dictLabel" placeholder="请输入字典标签" />
+          <el-input v-model="dataForm.dictLabel" :placeholder="字典标签" />
         </el-form-item>
         <el-form-item label="字典值" prop="dictValue">
-          <el-input v-model="dataForm.dictValue" placeholder="请输入字典值" />
+          <el-input v-model="dataForm.dictValue" :placeholder="字典值" />
         </el-form-item>
         <el-form-item label="排序" prop="dictSort">
           <el-input-number v-model="dataForm.dictSort" :min="0" controls-position="right" />
         </el-form-item>
         <el-form-item label="样式属性">
-          <el-input v-model="dataForm.cssClass" placeholder="请输入样式属性" />
+          <el-input v-model="dataForm.cssClass" :placeholder="样式属性" />
         </el-form-item>
         <el-form-item label="表格回显">
           <el-select v-model="dataForm.listClass" placeholder="请选择回显样式" clearable>
