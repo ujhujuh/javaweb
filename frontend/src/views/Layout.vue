@@ -12,9 +12,9 @@
       <el-menu
         :default-active="activeMenu"
         router
-        background-color="#545c64"
-        text-color="#fff"
-        active-text-color="#ffd04b"
+        :background-color="menuBgColor"
+        :text-color="menuTextColor"
+        :active-text-color="menuActiveTextColor"
         :collapse="isCollapsed"
         :collapse-transition="false"
       >
@@ -53,9 +53,9 @@
           :default-active="activeMenu"
           router
           mode="horizontal"
-          background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
+          :background-color="menuBgColor"
+          :text-color="menuTextColor"
+          :active-text-color="menuActiveTextColor"
         >
           <el-menu-item index="/dashboard">
             <el-icon><House /></el-icon>
@@ -102,7 +102,6 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                    <el-dropdown-item command="password">修改密码</el-dropdown-item>
                     <el-dropdown-item command="refresh" divided>
                       <el-icon class="dropdown-item-icon"><Refresh /></el-icon>
                       系统刷新
@@ -112,6 +111,10 @@
                         <component :is="isHorizontal ? Menu : Expand" />
                       </el-icon>
                       切换为{{ isHorizontal ? '纵向' : '横向' }}菜单
+                    </el-dropdown-item>
+                    <el-dropdown-item command="theme" divided>
+                      <el-icon class="dropdown-item-icon"><Sunny /></el-icon>
+                      切换主题
                     </el-dropdown-item>
                     <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
                   </el-dropdown-menu>
@@ -137,7 +140,6 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                    <el-dropdown-item command="password">修改密码</el-dropdown-item>
                     <el-dropdown-item command="refresh" divided>
                       <el-icon class="dropdown-item-icon"><Refresh /></el-icon>
                       系统刷新
@@ -147,6 +149,10 @@
                         <component :is="isHorizontal ? Menu : Expand" />
                       </el-icon>
                       切换为{{ isHorizontal ? '纵向' : '横向' }}菜单
+                    </el-dropdown-item>
+                    <el-dropdown-item command="theme" divided>
+                      <el-icon class="dropdown-item-icon"><Sunny /></el-icon>
+                      切换主题
                     </el-dropdown-item>
                     <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
                   </el-dropdown-menu>
@@ -183,44 +189,38 @@
         </el-descriptions>
       </el-dialog>
 
-      <!-- 个人中心对话框 -->
-      <el-dialog v-model="profileVisible" title="个人中心" width="500px">
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="用户名">{{ userInfo.username }}</el-descriptions-item>
-          <el-descriptions-item label="昵称">{{ userInfo.nickname || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="邮箱">{{ userInfo.email || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="手机号">{{ userInfo.phone || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="性别">
-            <span v-if="userInfo.sex === '0'">未知</span>
-            <span v-else-if="userInfo.sex === '1'">男</span>
-            <span v-else-if="userInfo.sex === '2'">女</span>
-            <span v-else>-</span>
-          </el-descriptions-item>
-          <el-descriptions-item label="状态">
-            <el-tag :type="userInfo.status === '0' ? 'success' : 'danger'">
-              {{ userInfo.status === '0' ? '正常' : '停用' }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="创建时间">{{ userInfo.createTime }}</el-descriptions-item>
-        </el-descriptions>
-      </el-dialog>
+      <!-- 个人中心对话框（合并版） -->
+      <Profile
+        v-model="profileVisible"
+        :user-info="userInfo"
+        @update-password="handleUpdatePassword"
+      />
 
-      <!-- 修改密码对话框 -->
-      <el-dialog v-model="passwordVisible" title="修改密码" width="400px">
-        <el-form :model="passwordForm" :rules="passwordRules" ref="passwordFormRef" label-width="80px">
-          <el-form-item label="原密码" prop="oldPassword">
-            <el-input v-model="passwordForm.oldPassword" type="password" show-password />
-          </el-form-item>
-          <el-form-item label="新密码" prop="newPassword">
-            <el-input v-model="passwordForm.newPassword" type="password" show-password />
-          </el-form-item>
-          <el-form-item label="确认密码" prop="confirmPassword">
-            <el-input v-model="passwordForm.confirmPassword" type="password" show-password />
-          </el-form-item>
-        </el-form>
+      <!-- 主题选择对话框 -->
+      <el-dialog v-model="themeDialogVisible" title="切换主题" width="500px">
+        <div class="theme-options">
+          <div
+            v-for="theme in themeStore.getAllThemes()"
+            :key="theme.key"
+            class="theme-option"
+            :class="{ 'theme-option-selected': selectedTheme === theme.key }"
+            @click="handleThemeSelect(theme.key)"
+          >
+            <el-icon class="theme-icon" :size="32">
+              <component :is="theme.key === ThemeType.DARK ? Moon : Sunny" />
+            </el-icon>
+            <div class="theme-info">
+              <div class="theme-name">{{ theme.name }}</div>
+              <div class="theme-desc">{{ theme.description }}</div>
+            </div>
+            <el-icon v-if="selectedTheme === theme.key" class="theme-check" :size="20" color="#409eff">
+              <component :is="Check" />
+            </el-icon>
+          </div>
+        </div>
         <template #footer>
-          <el-button @click="passwordVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleUpdatePassword">确定</el-button>
+          <el-button @click="themeDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleThemeConfirm">确定</el-button>
         </template>
       </el-dialog>
 
@@ -238,6 +238,8 @@ import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
 import { noticeApi, menuApi, userConfigApi } from '@/api/system'
 import MenuItem from '@/components/MenuItem.vue'
+import Profile from '@/views/user/Profile.vue'
+import { useThemeStore, ThemeType } from '@/store/theme'
 import {
   House,
   Setting,
@@ -253,7 +255,10 @@ import {
   Expand,
   Fold,
   Menu,
-  Loading
+  Loading,
+  Sunny,
+  Moon,
+  Check
 } from '@element-plus/icons-vue'
 
 // 图标映射
@@ -282,9 +287,27 @@ const iconMap = {
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const themeStore = useThemeStore()
 
 const activeMenu = computed(() => route.path)
 const menuList = ref([])
+
+// 菜单主题颜色
+const menuBgColor = computed(() => {
+  return themeStore.currentTheme === ThemeType.DARK ? '#0f0f1a' :
+         themeStore.currentTheme === ThemeType.FRESH ? '#389e0d' :
+         '#545c64'
+})
+const menuTextColor = computed(() => {
+  return themeStore.currentTheme === ThemeType.DARK ? '#e2e8f0' :
+         themeStore.currentTheme === ThemeType.FRESH ? '#ffffff' :
+         '#ffffff'
+})
+const menuActiveTextColor = computed(() => {
+  return themeStore.currentTheme === ThemeType.DARK ? '#a78bfa' :
+         themeStore.currentTheme === ThemeType.FRESH ? '#f6ffed' :
+         '#ffd04b'
+})
 
 // 配置加载状态
 const configLoading = ref(true)
@@ -292,6 +315,10 @@ const configLoading = ref(true)
 // 菜单状态
 const isCollapsed = ref(false)
 const isHorizontal = ref(false)
+
+// 主题选择对话框
+const themeDialogVisible = ref(false)
+const selectedTheme = ref(themeStore.currentTheme)
 
 // 加载用户配置
 const loadUserConfig = async () => {
@@ -362,36 +389,6 @@ const userInfo = ref({
 // 个人中心
 const profileVisible = ref(false)
 
-// 修改密码
-const passwordVisible = ref(false)
-const passwordFormRef = ref(null)
-const passwordForm = ref({
-  oldPassword: '',
-  newPassword: '',
-  confirmPassword: ''
-})
-
-const passwordRules = {
-  oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
-  newPassword: [
-    { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
-  ],
-  confirmPassword: [
-    { required: true, message: '请确认新密码', trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        if (value !== passwordForm.value.newPassword) {
-          callback(new Error('两次输入的密码不一致'))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'blur'
-    }
-  ]
-}
-
 const handleCommand = async (command) => {
   if (command === 'logout') {
     try {
@@ -401,21 +398,29 @@ const handleCommand = async (command) => {
     } catch (error) {
       ElMessage.error(error.message || '退出失败')
     }
-  } else if (command === 'profile') {
+  } else if (command === 'profile' || command === 'password') {
     loadUserInfo()
     profileVisible.value = true
-  } else if (command === 'password') {
-    passwordForm.value = {
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    }
-    passwordVisible.value = true
   } else if (command === 'refresh') {
     handleRefreshMenu()
   } else if (command === 'toggleMenu') {
     toggleMenuMode()
+  } else if (command === 'theme') {
+    selectedTheme.value = themeStore.currentTheme
+    themeDialogVisible.value = true
   }
+}
+
+// 主题选择
+const handleThemeSelect = (theme) => {
+  selectedTheme.value = theme
+}
+
+// 主题确认
+const handleThemeConfirm = () => {
+  themeStore.setTheme(selectedTheme.value)
+  themeDialogVisible.value = false
+  ElMessage.success('主题切换成功')
 }
 
 const loadUserInfo = async () => {
@@ -429,21 +434,17 @@ const loadUserInfo = async () => {
   }
 }
 
-const handleUpdatePassword = async () => {
-  if (!passwordFormRef.value) return
-  await passwordFormRef.value.validate(async (valid) => {
-    if (valid) {
-      try {
-        // 这里需要调用修改密码的API
-        ElMessage.success('密码修改成功，请重新登录')
-        passwordVisible.value = false
-        await userStore.logoutAction()
-        router.push('/login')
-      } catch (error) {
-        ElMessage.error(error.message || '修改失败')
-      }
-    }
-  })
+const handleUpdatePassword = async (passwordData) => {
+  try {
+    // 这里需要调用修改密码的API
+    // await updateUserPassword(passwordData)
+    ElMessage.success('密码修改成功，请重新登录')
+    profileVisible.value = false
+    await userStore.logoutAction()
+    router.push('/login')
+  } catch (error) {
+    ElMessage.error(error.message || '修改失败')
+  }
 }
 
 const handleRefreshMenu = async () => {
@@ -566,7 +567,7 @@ onMounted(async () => {
 }
 
 .el-aside {
-  background-color: #545c64;
+  background-color: var(--theme-menu-bg);
   transition: width 0.3s;
   display: flex;
   flex-direction: column;
@@ -748,5 +749,58 @@ onMounted(async () => {
 .el-main {
   background-color: #f5f5f5;
   padding: 20px;
+}
+
+/* 主题选择对话框样式 */
+.theme-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 2px solid var(--theme-border-color-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: var(--theme-card-bg);
+}
+
+.theme-option:hover {
+  border-color: var(--theme-primary);
+  background-color: var(--theme-primary-light);
+}
+
+.theme-option-selected {
+  border-color: var(--theme-primary);
+  background-color: var(--theme-primary-light);
+}
+
+.theme-icon {
+  margin-right: 16px;
+  color: var(--theme-primary);
+}
+
+.theme-info {
+  flex: 1;
+}
+
+.theme-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--theme-text-color);
+  margin-bottom: 4px;
+}
+
+.theme-desc {
+  font-size: 14px;
+  color: var(--theme-text-color-secondary);
+}
+
+.theme-check {
+  margin-left: 8px;
 }
 </style>
